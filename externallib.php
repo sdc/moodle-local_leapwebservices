@@ -24,6 +24,11 @@
 
 require_once($CFG->libdir.'/externallib.php');
 
+/**
+ * External Webservices API class
+ * @copyright   2011 onwards Paul Vaughan, paulvaughan@southdevon.ac.uk
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class local_leapwebservices_external extends external_api {
 
     /**
@@ -43,7 +48,7 @@ class local_leapwebservices_external extends external_api {
             array(
                 'username' => new external_value(PARAM_TEXT, 'Username of user. If empty, fail.'),
             )
-       );
+        );
     }
 
     /**
@@ -59,7 +64,7 @@ class local_leapwebservices_external extends external_api {
             array('username' => $username));
 
         if ($params['username'] == '') {
-            header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', TRUE, 422);
+            header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', true, 422);
         }
 
         $courses = $DB->get_records_sql("SELECT DISTINCT c.id AS id, c.fullname, c.shortname, c.idnumber, c.visible
@@ -95,7 +100,7 @@ class local_leapwebservices_external extends external_api {
 
             $user = $DB->get_record('user', array('username' => $params['username']));
             $context = get_context_instance(CONTEXT_COURSE, $course->id);
-            $courseinfo['canedit'] = has_capability('moodle/course:update', $context, $user->id) ? 1 : 0 ;
+            $courseinfo['canedit'] = has_capability('moodle/course:update', $context, $user->id) ? 1 : 0;
 
             $coursesinfo[] = $courseinfo;
         }
@@ -139,7 +144,7 @@ class local_leapwebservices_external extends external_api {
             array(
                 'idnumber' => new external_value(PARAM_TEXT, 'idnumber of course. If empty, fail.'),
             )
-       );
+        );
     }
 
     /**
@@ -154,7 +159,7 @@ class local_leapwebservices_external extends external_api {
         $params = self::validate_parameters(self::get_courses_by_idnumber_parameters(), array('idnumber' => $idnumber));
 
         if ($params['idnumber'] == '') {
-            header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'idnumber\'] empty.)', TRUE, 422);
+            header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'idnumber\'] empty.)', true, 422);
         }
 
         $courses = $DB->get_records_select('course', 'idnumber LIKE "%|'.$idnumber.'|%"', null, 'id', '*', null, null);
@@ -297,7 +302,7 @@ class local_leapwebservices_external extends external_api {
     /**
      * Get user information
      *
-     * @param array $userids  array of user ids
+     * @param array $usernames  array of user ids
      * @return array An array of arrays describing users
      */
     public static function get_users_by_username($usernames) {
@@ -411,7 +416,7 @@ class local_leapwebservices_external extends external_api {
     /**
      * Get user information
      *
-     * @param array $userids array of user ids
+     * @param array $username array of user ids
      * @return array An array of arrays describing users
      */
     public static function get_assignments_by_username($username) {
@@ -420,7 +425,7 @@ class local_leapwebservices_external extends external_api {
         $params = self::validate_parameters(self::get_assignments_by_username_parameters(), array('username' => $username));
 
         if ($params['username'] == '') {
-            header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', TRUE, 422);
+            header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', true, 422);
             exit;
         }
 
