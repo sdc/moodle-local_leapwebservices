@@ -189,7 +189,6 @@ class local_leapwebservices_external extends external_api {
                 $courseinfo['timemodified']             = $course->timemodified;
                 $courseinfo['forcetheme']               = $course->theme;
                 $courseinfo['enablecompletion']         = $course->enablecompletion;
-                $courseinfo['completionstartonenrol']   = $course->completionstartonenrol;
                 $courseinfo['completionnotify']         = $course->completionnotify;
             }
 
@@ -227,15 +226,12 @@ class local_leapwebservices_external extends external_api {
                         'number of recent items appearing on the course page', VALUE_OPTIONAL),
                     'startdate' => new external_value(PARAM_INT,
                         'timestamp when the course start'),
-                    'numsections' => new external_value(PARAM_INT, 'number of weeks/topics'),
                     'maxbytes' => new external_value(PARAM_INT,
                         'largest size of file that can be uploaded into the course', VALUE_OPTIONAL),
                     'showreports' => new external_value(PARAM_INT,
                         'are activity report shown (yes = 1, no =0)', VALUE_OPTIONAL),
                     'visible' => new external_value(PARAM_INT,
                         '1: available to student, 0:not available', VALUE_OPTIONAL),
-                    'hiddensections' => new external_value(PARAM_INT,
-                        'How the hidden sections in the course are displayed to students', VALUE_OPTIONAL),
                     'groupmode' => new external_value(PARAM_INT, 'no group, separate, visible', VALUE_OPTIONAL),
                     'groupmodeforce' => new external_value(PARAM_INT, '1: yes, 0: no', VALUE_OPTIONAL),
                     'defaultgroupingid' => new external_value(PARAM_INT, 'default grouping id', VALUE_OPTIONAL),
@@ -246,9 +242,6 @@ class local_leapwebservices_external extends external_api {
                     'enablecompletion' => new external_value(PARAM_INT,
                         'Enabled, control via completion and activity settings. Disbaled,
                         not shown in activity settings.', VALUE_OPTIONAL),
-                    'completionstartonenrol' => new external_value(PARAM_INT,
-                        '1: begin tracking a student\'s progress in course completion
-                        after course enrolment. 0: does not', VALUE_OPTIONAL),
                     'completionnotify' => new external_value(PARAM_INT,
                         '1: yes 0: no', VALUE_OPTIONAL),
                     'lang' => new external_value(PARAM_ALPHANUMEXT,
