@@ -36,19 +36,56 @@ Before installation, please check you have the following files and structure:
 
 ## Configuration
 
-(This guide has been written using Moodle 2.5: your mileage may vary.)
+**Note:** This guide has been written using Moodle 2.5: your mileage may vary.
 
 This plugin has no configuration itself, however your Moodle 2.x installation will require configuration to correctly use web services. 
 
-1. Log in to your Moodle as administrator. Click on Administration (block) &rarr; Site Administration &rarr; Plugins &rarr; Web services &rarr; Overview.
+1.  Log in to your Moodle as administrator. Click on Administration (block) &rarr; Site Administration &rarr; Plugins &rarr; Web services &rarr; Overview.
 
     This page shows an overview of Moodle's current web service configuration. You may wish to keep this page open, and open any links in a new tab or window, refreshing this page on your return.
 
-2. Click *1. Enable web services*. Check the box (a tick, cross or other identifying mark will appear, depending on your web browser) to turn web services on, then click *Save settings*. Return to the *Web services &rarr; Overview* screen. 
+2.  Click *1. Enable web services*. Check the box (a tick, cross or other identifying mark will appear, depending on your web browser) to turn web services on, then click *Save settings*. Return to the *Web services &rarr; Overview* screen.
 
-    The overview screen should now show **yes** next to *1. Enable web services* in the *status* column next.
+    The overview screen should now show **yes** next to *1. Enable web services* in the *status* column.
 
-3. 
+3.  Click *2. Enable protocols*. Enable the *REST* protocol: click on the eye with the line through it, it will become *open*.  The other protocols are not required for the Leap web services, however *XML-RPC* is required for the older, unofficial Moodle mobile app and may already be turned on. 
+
+    You may benefit from turning on *Web services documentation* (check the checkbox, click *Save settings*) but it is strongly advised to turn it off when it is no longer necessary.
+
+    Return to the *Web services &rarr; Overview* screen. It should now show (at least) **REST** next to *2. Enable protocols* in the *status* column.
+
+4.  A specific user is required to act as Moodle's avatar for incoming web services. You can have one user per web service, or one for all. Our setup uses a user called *Leap User* and it's profile picture is set accordingly.
+
+    Click *3. Create a specific user*.  Create this user as you see fit: give it a relavant username and a **strong** password, as this user will have considerable control over core Moodle functions. 
+
+5.  Create a web services role with appropriate protocol capabilities allowed (*webservice/rest:use*) and assign it to the web services user as a system role. Click on Administration (block) &rarr; Site Administration &rarr; Users &rarr; Permissions &rarr; Define roles, and click on *Add role*.
+
+    Type in a relevant short (internal) name and a full (human readable) name, as well as a description (will only be seen by admins).  Ignore *Role archetype*. Check only the *system* check box. Search for and *allow* the following capabilities (The best way is to use your web browser's search feature and search for the text exactly as it appears: it will get you to the exact capability or very close):
+
+    **Web service: REST protocol**
+    * webservice/rest:use (Use REST protocol)
+    
+    **System**
+    * moodle/site:viewparticipants (View participants) 
+    * moodle/user:update (Update user profiles)
+
+    **Users**
+    * moodle/user:viewalldetails (View user full information)
+
+    **Course**
+    * moodle/course:enrolreview (Review course enrolments)
+    * moodle/course:movesections (Move sections)
+    * moodle/course:update (Update course settings)
+    * moodle/course:useremail (Enable/disable email address)
+    * moodle/course:view (View courses without participation)
+    * moodle/course:viewhiddencourses (View hidden courses)
+    * moodle/course:viewparticipants (View participants)
+    * moodle/role:review (Review permissions for others)
+    * moodle/site:accessallgroups (Access all groups)
+    * moodle/user:viewdetails (View user profiles)
+    * moodle/user:viewhiddendetails (View hidden details of users)
+
+The user should have appropriate capabilities according to the protocols used, for example webservice/rest:use, webservice/soap:use. To achieve this, 
 
 ## History
 
