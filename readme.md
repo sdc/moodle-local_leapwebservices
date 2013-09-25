@@ -58,9 +58,9 @@ This plugin has no configuration itself, however your Moodle 2.x installation wi
 
     Click *3. Create a specific user*.  Create this user as you see fit: give it a relavant username and a **strong** password, as this user will have considerable control over core Moodle functions. 
 
-5.  Create a web services role with appropriate protocol capabilities allowed (*webservice/rest:use*) and assign it to the web services user as a system role. Click on Administration (block) &rarr; Site Administration &rarr; Users &rarr; Permissions &rarr; Define roles, and click on *Add role*.
+5.  Create a new role ("web services") with appropriate protocol capabilities allowed (*webservice/rest:use*). Click on Administration (block) &rarr; Site Administration &rarr; Users &rarr; Permissions &rarr; Define roles, and click on *Add role*.
 
-    Type in a relevant short (internal) name and a full (human readable) name, as well as a description (will only be seen by admins).  Ignore *Role archetype*. Check only the *system* check box. Search for and *allow* the following capabilities (The best way is to use your web browser's search feature and search for the text exactly as it appears: it will get you to the exact capability or very close):
+    Type in a relevant short (internal) name and a full (human readable) name, as well as a description (will only be seen by admins).  Ignore *Role archetype*. Check only the *system* check box. Search for and *allow* the following capabilities (the best way is to use your web browser's search feature and search for the text exactly as it appears: it will get you to the exact capability or very close):
 
     **Web service: REST protocol**
     * webservice/rest:use (Use REST protocol)
@@ -85,7 +85,8 @@ This plugin has no configuration itself, however your Moodle 2.x installation wi
     * moodle/user:viewdetails (View user profiles)
     * moodle/user:viewhiddendetails (View hidden details of users)
 
-The user should have appropriate capabilities according to the protocols used, for example webservice/rest:use, webservice/soap:use. To achieve this, 
+6.  Assign the new web services role to the web services user as a system role: click on Administration (block) &rarr; Site Administration &rarr; Users &rarr; Permissions &rarr; Assign system roles.  Click on *webservices* (or whatever you have named your new role), then search in the box on the right for the new user, then *add* the new user so the name appears in the box on the right.  It should be the only name in that box.
+
 
 ## History
 
