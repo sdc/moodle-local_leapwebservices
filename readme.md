@@ -1,6 +1,10 @@
 # Moodle 2 Web Services for Leap
 
+## Introduction
+
 This plugin contains the web services required for integration between [Moodle](http://moodle.org) 2 and [Leap](http://leap-ilp.com), South Devon College's ILP ( individual learning plan) system. More info about Leap can be found at [leap-ilp.com](http://leap-ilp.com).
+
+## Purpose
 
 Web services for Leap already existed as they were written for our launch of Moodle 2.1, however they were added to core Moodle code in the first instance, and were becoming increasingly difficult to manage.
 
@@ -10,6 +14,16 @@ This local Moodle plugin has it's own repository located at [github.com/sdc/mood
 
 **Note:** This plugin is only required if you are using Leap ILP from south Devon College. It has no use in any other circumstance. :)
 
+## Licence
+
+Copyright (C) 2009-2013 Paul Vaughan
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ## Files
 
 Before installation, please check you have the following files and structure:
@@ -18,6 +32,7 @@ Before installation, please check you have the following files and structure:
     |-- db
     |   \-- services.php
     |-- externallib.php
+    |-- gpl-3.0.txt
     |-- lang
     |   \-- en
     |       \-- local_leapwebservices.php
@@ -56,7 +71,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
 4.  A specific user is required to act as Moodle's avatar for incoming web services. You can have one user per web service, or one for all. Our setup uses a user called **Leap User** and it's profile picture is set accordingly.
 
-    Click **3. Create a specific user**.  Create this "Leap user" as you see fit: give it a relevant username and a **strong** password, as this user will have considerable control over core Moodle functions. 
+    Click **3. Create a specific user**.  Create this "Leap user" as you see fit: give it a relevant username ("*leapuser*" in our case) and a **strong** password, as this user will have considerable control over core Moodle functions. 
 
 5.  Create a new role ("web services") with appropriate protocol capabilities allowed (**webservice/rest:use**). Click on **Administration (block) &rarr; Site Administration &rarr; Users &rarr; Permissions &rarr; Define roles**, and click on **Add role**.
 
@@ -101,21 +116,35 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     Clicking the **Edit** button allows you to rename the web service (not recommended) and enable/disable the service. It is enabled as default.
 
-	When done, return to the **Web services &rarr; Overview** screen.
+    When done, return to the **Web services &rarr; Overview** screen.
 
-9.  **6. Add functions** and **7. Select a specific user** have already been completed as part of **5. Select a service**, so ignore them. Also ignore **8. Create a token for a user**.
+9.  **6. Add functions** and **7. Select a specific user** have already been completed as part of **5. Select a service**, so ignore them. 
 
-10. As mentioned earlier, you may benefit from turning on **Web services documentation** but it is strongly advised to turn it off when it is no longer necessary.
+10. Click **8. Create a token for a user**.
+
+    In the *Username / user id*  box, type in the exact username of the user created / selected in **step 4**, above.  This is a required field.
+
+    **Note:** For us, our authentication system Shibboleth uses usernames in the form of an email address:
+
+    Select *Leap* from the *Service* drop-down list, if it is not already chosen. (If you have Moodle mobile web services enabled, then they will appear also and I believe are the default option.) This is also a required option.
+
+    If you wish, you may restrict the IP addresses from which the *Leap User* is allowed to log in from.  If you know, for example, that the computer/server with the address `172.100.100.1` is the only server which should be accessing Moodle, then put that IP address in the **IP Restriction** box. This way, if someone does find out the username and password for this user, they still won't be able to log in unless they also gain access to the server with that IP address.
+
+    If you wish to restrict the date until which this user can log in with this token, check the **Enable** checkbox and set the date accordingly, either with the drop-down menus or by clicking on the date-picker menu icon.  Remember that you may always create another token for this user at any time, with a longer (or no) expiry: many can run concurrently.
+
+    Click **Save changes** when done. You will be taken back to the **Manage tokens** screen, which will now an alphanumeric token next to the name of your user. Your token will look something like
+
+11. As mentioned earlier, you may benefit from turning on **Web services documentation** but it is strongly advised to turn it off when it is no longer necessary.
 
     Click **9. Enable developer documentation**, check the checkbox, then click **Save settings**. Documentation will only be shown for enabled protocols.
 
-11. Click **10. Test the service**. This will perform a **live test** using the user created earlier against a Moodle web service: whatever you run *will* run (assuming no problems), so do not do anything destructive without meaning it.
+12. Click **10. Test the service**. This will perform a **live test** using the user created earlier against a Moodle web service: whatever you run *will* run (assuming no problems), so do not do anything destructive without meaning it.
 
     Select **simple** authentication method and the **REST** protocol. I strongly suggest using the function *moodle\_user\_get\_users\_by\_id* as this is a read-only, non-destructive query. Click **Select**.
 
 ## History
 
-* 2013-09-25, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
+* 2013-11-25, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
 * 2013-08-30, v0.3.1: Removed Moodle user table fields which no longer exist, preventing stack traces in the Moodle/Apache logs.
 * 2013-05-24, v0.3: Minor update as the mdl_course table has had some columns re/moved elsewhere in Moodle 2.5.
 * 2012-11-20, v0.2: Initial release of the plugin.
