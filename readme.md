@@ -48,7 +48,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     The overview screen should now show **yes** next to **1. Enable web services** in the **status** column.
 
-3.  Click **2. Enable protocols**. Enable the **REST** protocol: click on the eye with the line through it, it will become **open**.  The other protocols are not required for the Leap web services, however **XML-RPC** is required for the older, unofficial Moodle mobile app and may already be turned on. This is fine: all the protocols can be turned on and won't affect each other, however it is a security concern to run unnecessary protocols, so turn off what you do not need. 
+3.  Click **2. Enable protocols**. Enable the **REST** protocol: click on the eye with the line through it, it will become **open**.  The other protocols are not required for the Leap web services, however **XML-RPC** is required for the older, unofficial Moodle mobile app and may already be turned on. This is fine: all the protocols can be turned on and won't affect each other, however it is a security concern to run unnecessary protocols, so turn off what you do not need.
 
     You may benefit from turning on **Web services documentation** (check the checkbox, click **Save settings**) but it is strongly advised to turn it off when it is no longer necessary.
 
@@ -64,7 +64,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     **Web service: REST protocol**
     * webservice/rest:use (Use REST protocol)
-    
+
     **System**
     * moodle/site:viewparticipants (View participants) 
     * moodle/user:update (Update user profiles)
@@ -97,13 +97,21 @@ This plugin has no configuration itself, however your Moodle installation will r
 
 8.  Click **5. Select a service**.  In the **Built-in services** section you should see an entry for *Leap*, and probably also an entry for the *Moodle mobile web service*, which will be greyed out if this is not turned on via the checkbox at the top of the page. (*Moodle mobile web services* are not required to be turned on for Leap web services to work.)
 
-    Clicking on **Authorised users** next to *Leap* will show you a list of users authorised to use the Leap web services. It should show only the user you have assigned, but at the bottom of the page is a section titled **Change settings for the authorised users**: if there are any problems with the assigned user they will be listed here in orange, and will need to be fixed before progressing further. Clicking on the user's name or email address will show some further security options, such as *IP restriction* (so a user can access the web service only from one or a range of IP addresses, blank by default) and a *Valid until* date when the access will cease (off by default). If you change any settings here, click **Update** to save them.
+    Clicking on **Authorised users** next to *Leap* will show you a list of users authorised to use the Leap web services. It should show only the user you have assigned, but at the bottom of the page is a section titled **Change settings for the authorised users**: if there are any problems with the assigned user (lacking a particular context) they will be listed here in orange, and will need to be fixed before progressing further. Clicking on the user's name or email address will show some further security options, such as *IP restriction* (so a user can access the web service only from one or a range of IP addresses, blank by default) and a *Valid until* date when the access will cease (off by default). If you change any settings here, click **Update** to save them.
 
     Clicking the **Edit** button allows you to rename the web service (not recommended) and enable/disable the service. It is enabled as default.
 
 	When done, return to the **Web services &rarr; Overview** screen.
 
+9.  **6. Add functions** and **7. Select a specific user** have already been completed as part of **5. Select a service**, so ignore them. Also ignore **8. Create a token for a user**.
 
+10. As mentioned earlier, you may benefit from turning on **Web services documentation** but it is strongly advised to turn it off when it is no longer necessary.
+
+    Click **9. Enable developer documentation**, check the checkbox, then click **Save settings**. Documentation will only be shown for enabled protocols.
+
+11. Click **10. Test the service**. This will perform a **live test** using the user created earlier against a Moodle web service: whatever you run *will* run (assuming no problems), so do not do anything destructive without meaning it.
+
+    Select **simple** authentication method and the **REST** protocol. I strongly suggest using the function *moodle\_user\_get\_users\_by\_id* as this is a read-only, non-destructive query. Click **Select**.
 
 ## History
 
