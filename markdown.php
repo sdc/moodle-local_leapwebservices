@@ -3105,16 +3105,3 @@ if(empty($_GET['file'])) {
   echo Markdown::defaultTransform(fread(fopen($_GET['file'], 'r'), filesize($file)));
 }
 
-?>
-<hr>
-<p>More .md files:</p>
-<ul>
-  <li><a href="markdown.php?file=m25/block_courseawards_vote/readme.md">m25/block_courseawards_vote/readme.md</a></li>
-  <li><a href="markdown.php?file=m25/block_courseawards_medal/readme.md">m25/block_courseawards_medal/readme.md</a></li>
-  <li><a href="markdown.php?file=m25/report_courseawards/readme.md">m25/report_courseawards/readme.md</a></li>
-  <li>--</li>
-  <li><a href="markdown.php?file=moodle/admin/tool/sdctools/readme.md">moodle/admin/tool/sdctools/readme.md</a></li>
-  <li><a href="markdown.php?file=m25/block_searchthiscourse/readme.md">m25/block_searchthiscourse/readme.md</a></li>
-  <li><a href="markdown.php?file=iwanttobe/readme.md">iwanttobe/readme.md</a></li>
-  <li><a href="markdown.php?file=m24/local_leapwebservices/readme.md">m24/local_leapwebservices/readme.md</a></li>
-</ul>
