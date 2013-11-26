@@ -16,7 +16,7 @@ This local Moodle plugin has it's own repository located at [github.com/sdc/mood
 
 ## Licence
 
-Copyright &copy; 2009-2013 South Devon College.
+Copyright &copy; 2011-2013 South Devon College.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
