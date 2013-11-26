@@ -124,7 +124,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     In the *Username / user id*  box, type in the exact username of the user created / selected in **step 4**, above.  This is a required field.
 
-    **Note:** For us, our authentication system Shibboleth uses usernames in the form of an email address:
+    **Note:** For us, our authentication system [Shibboleth](http://shibboleth.net/) uses usernames in the form of an email address (e.g. username@example.com) but your system may be different and will most likely use only the *username* part. 
 
     Select *Leap* from the *Service* drop-down list, if it is not already chosen. (If you have Moodle mobile web services enabled, then they will appear also and I believe are the default option.) This is also a required option.
 
@@ -132,7 +132,12 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     If you wish to restrict the date until which this user can log in with this token, check the **Enable** checkbox and set the date accordingly, either with the drop-down menus or by clicking on the date-picker menu icon.  Remember that you may always create another token for this user at any time, with a longer (or no) expiry: many can run concurrently.
 
-    Click **Save changes** when done. You will be taken back to the **Manage tokens** screen, which will now an alphanumeric token next to the name of your user. Your token will look something like
+    Click **Save changes** when done. You will be taken back to the **Manage tokens** screen, which will now show an alphanumeric token next to the name of your user. Your token will look something like *a180245560982a0e48e43577238c0198*. Treat this token like a password, keeping it secret and known only to those who absolutely need it, as anyone who has this token potentially has full access to all the webservices you selected earlier.
+
+    **Note:** This admin screen, and therefore the token, is available to anyone who is an *Administrator* on your Moodle.
+
+    When done, return to the **Web services &rarr; Overview** screen.
+
 
 11. As mentioned earlier, you may benefit from turning on **Web services documentation** but it is strongly advised to turn it off when it is no longer necessary.
 
