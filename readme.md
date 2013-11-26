@@ -149,7 +149,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
 ## History
 
-* 2013-11-25, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
+* 2013-11-26, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
 * 2013-08-30, v0.3.1: Removed Moodle user table fields which no longer exist, preventing stack traces in the Moodle/Apache logs.
 * 2013-05-24, v0.3: Minor update as the mdl_course table has had some columns re/moved elsewhere in Moodle 2.5.
 * 2012-11-20, v0.2: Initial release of the plugin.
