@@ -12,7 +12,7 @@ Now that Leap is being increasingly used in other colleges, the Moodle-Leap inte
 
 This local Moodle plugin has it's own repository located at [github.com/sdc/moodle-local_leapwebservices](https://github.com/sdc/moodle-local_leapwebservices), where bugs can be reported and issues raised.
 
-**Note:** This plugin is only required if you are using Leap ILP from south Devon College. It has no use in any other circumstance. :)
+(**Note:** This plugin is only required if you are using Leap ILP from south Devon College. It has no use in any other circumstance. :)
 
 ## Licence
 
@@ -51,13 +51,13 @@ Before installation, please check you have the following files and structure:
 
 ## Configuration
 
-**Note:** This guide has been written using Moodle 2.5, which contains many changes from the 2.0 release: your mileage may vary.
+(**Note:** This guide has been written using Moodle 2.5, which contains many changes from the 2.0 release: your mileage may vary.)
 
 This plugin has no configuration itself, however your Moodle installation will require configuration to correctly use web services. 
 
 1.  Log in to your Moodle as administrator. Click on **Administration (block) &rarr; Site Administration &rarr; Plugins &rarr; Web services &rarr; Overview**.
 
-    **Note:** *This page shows an overview of Moodle's current web service configuration. You may wish to keep this page open, and open any links in a new tab or window, refreshing this page on your return.*
+    (**Note:** *This page shows an overview of Moodle's current web service configuration. You may wish to keep this page open, and open any links in a new tab or window, refreshing this page on your return.*)
 
 2.  Click **1. Enable web services**. Check the box (a tick, cross or other identifying mark will appear, depending on your web browser) to turn web services on, then click **Save settings**. Return to the **Web services &rarr; Overview** screen.
 
@@ -100,7 +100,7 @@ This plugin has no configuration itself, however your Moodle installation will r
     * moodle/user:viewdetails (View user profiles)
     * moodle/user:viewhiddendetails (View hidden details of users)
 
-	(**Note:** the best way is to use your web browser's search feature and search for the text exactly as it appears: it will get you to the exact capability or very close.)
+    (**Note:** the best way is to use your web browser's search feature and search for the text exactly as it appears: it will get you to the exact capability or very close.)
 
 6.  Assign the new *web services role* to the *web services user* as a system role: click on **Administration (block) &rarr; Site Administration &rarr; Users &rarr; Permissions &rarr; Assign system roles**.  Click on *webservices* (or whatever you have named your new role), then search in the box on the right for the new *Leap user*, then **add** the new user so the name appears in the box on the right.  It should be the only name in that box.  Return to the **Web services &rarr; Overview** screen.
 
@@ -124,7 +124,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     In the *Username / user id*  box, type in the exact username of the user created / selected in **step 4**, above.  This is a required field.
 
-    **Note:** For us, our authentication system [Shibboleth](http://shibboleth.net/) uses usernames in the form of an email address (e.g. username@example.com) but your system may be different and will most likely use only the *username* part. 
+    (**Note:** For us, our authentication system [Shibboleth](http://shibboleth.net/) uses usernames in the form of an email address (e.g. username@example.com) but your system may be different and will most likely use only the *username* part.)
 
     Select *Leap* from the *Service* drop-down list, if it is not already chosen. (If you have Moodle mobile web services enabled, then they will appear also and I believe are the default option.) This is also a required option.
 
@@ -134,10 +134,9 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     Click **Save changes** when done. You will be taken back to the **Manage tokens** screen, which will now show an alphanumeric token next to the name of your user. Your token will look something like *a180245560982a0e48e43577238c0198*. Treat this token like a password, keeping it secret and known only to those who absolutely need it, as anyone who has this token potentially has full access to all the webservices you selected earlier.
 
-    **Note:** This admin screen, and therefore the token, is available to anyone who is an *Administrator* on your Moodle.
+    (**Note:** This admin screen, and therefore the token, is available to anyone who is an *Administrator* on your Moodle.)
 
     When done, return to the **Web services &rarr; Overview** screen.
-
 
 11. As mentioned earlier, you may benefit from turning on **Web services documentation** but it is strongly advised to turn it off when it is no longer necessary.
 
@@ -145,8 +144,16 @@ This plugin has no configuration itself, however your Moodle installation will r
 
 12. Click **10. Test the service**. This will perform a **live test** using the user created earlier against a Moodle web service: whatever you run *will* run (assuming no problems), so do not do anything destructive without meaning it.
 
-    Select **simple** authentication method and the **REST** protocol. I strongly suggest using the function *moodle\_user\_get\_users\_by\_id* as this is a read-only, non-destructive query. Click **Select**.
+    Select **token** authentication method and the **REST** protocol. I strongly suggest using the function *moodle\_user\_get\_users\_by\_id* as this is a read-only, non-destructive query. Click **Select**.
+    
+    Into the **token** field, paste in your token. You may copy it from the *Manage tokens* page (open in a new tab): **Administration (block) &rarr; Site Administration &rarr; Plugins &rarr; Web services &rarr; Manage tokens**.
+    
+    In the fields *userids[0]* to *userids[3]* you pay type in any Moodle user's ID, which will be used in the test. I strongly recommend your own, as you will be best placed to judge the success of the test. 
+    
+    (**Note:** To find your own Moodle user ID, simply hover your mouse over your name where it says **You are logged in as User Name** in the top-right corner (standard Moodle theme, yours may be different), and most web browsers will show the URL you are about to click on at the bottom of the screen, which includes the user ID of the currently logged-in user at the end e.g. 123: **http://example.com/user/profile.php?id=123**.)
 
+    When you have the token in place and at least one known-valid user ID, click **Execute**.
+    
 ## History
 
 * 2013-11-26, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
