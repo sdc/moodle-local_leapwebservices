@@ -142,21 +142,21 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     Click **9. Enable developer documentation**, check the checkbox, then click **Save settings**. Documentation will only be shown for enabled protocols.
 
-12. Click **10. Test the service**. This will perform a **live test** using the user created earlier against a Moodle web service: whatever you run *will* run (assuming no problems), so do not do anything destructive without meaning it.
+12. There are no built-in tests within Moodle which can test the Leap web service, only a handful of Moodle's own functions. The only way to test it is to add the token to an already-configured Leap system and test to see if a user's Moodle courses are being shown.
 
-    Select **token** authentication method and the **REST** protocol. I strongly suggest using the function *moodle\_user\_get\_users\_by\_id* as this is a read-only, non-destructive query. Click **Select**.
+    Log in to your **Leap** installation as an administrative user.  Click on the **Admin** dropdiown menu at the top on the right, next to your name. If you cannot see this menu, you do not have administrative rights on your Leap installation.  Select **Settings**.
     
-    Into the **token** field, paste in your token. You may copy it from the *Manage tokens* page (open in a new tab): **Administration (block) &rarr; Site Administration &rarr; Plugins &rarr; Web services &rarr; Manage tokens**.
+    Scroll down the screen until you see a section called **Old settings**. (This may change in the future as the settings aspect of Leap is improved.)  Find a field called **Moodle token** and paste into this field the token Moodle generated in step 10, above.
     
-    In the fields *userids[0]* to *userids[3]* you pay type in any Moodle user's ID, which will be used in the test. I strongly recommend your own, as you will be best placed to judge the success of the test. 
+    Scroll down and click *Save changes*.
     
-    (**Note:** To find your own Moodle user ID, simply hover your mouse over your name where it says **You are logged in as User Name** in the top-right corner (standard Moodle theme, yours may be different), and most web browsers will show the URL you are about to click on at the bottom of the screen, which includes the user ID of the currently logged-in user at the end e.g. 123: **http://example.com/user/profile.php?id=123**.)
+    Accessing any student's information on Leap should now also show all courses they are enrolled on in Moodle.
 
-    When you have the token in place and at least one known-valid user ID, click **Execute**.
-    
+    **Note:** If you experience problems with any of the above steps, please contact us via the contact options on [leap-ilp.com](http://leap-ilp.com) or by [opening an issue here on GitHub](https://github.com/sdc/moodle-local_leapwebservices/issues).
+
 ## History
 
-* 2013-11-26, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
+* 2013-11-27, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
 * 2013-08-30, v0.3.1: Removed Moodle user table fields which no longer exist, preventing stack traces in the Moodle/Apache logs.
 * 2013-05-24, v0.3: Minor update as the mdl_course table has had some columns re/moved elsewhere in Moodle 2.5.
 * 2012-11-20, v0.2: Initial release of the plugin.
