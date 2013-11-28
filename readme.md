@@ -44,7 +44,7 @@ Before installation, please check you have the following files and structure:
 
 ## Installation
 
-* Copy the folder this readme is in into your Moodle's **/local** folder
+* Copy the folder containing this readme to your Moodle's **/local** folder
 * Ensure the folder is named **leapwebservices** (removing any other text which may have appeared as part of the cloning or un-Zipping process)
 * Log in to your Moodle site as an Administrator and visit the Notifications page
 * The plugin should install without error. If you receive an error, please report it [here](https://github.com/sdc/moodle-local_leapwebservices/issues)
