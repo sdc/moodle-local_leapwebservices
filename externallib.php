@@ -66,7 +66,7 @@ class local_leapwebservices_external extends external_api {
             AND cxt.contextlevel = 50
             AND cxt.instanceid = c.id
             AND ra.roleid = r.id
-            AND u.username =  '".$params['username']."'
+            AND u.username =  \"".$params['username']."\"
             ORDER BY fullname ASC;");
 
         $coursesinfo = array();
