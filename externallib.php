@@ -146,7 +146,7 @@ class local_leapwebservices_external extends external_api {
             header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'idnumber\'] empty.)', true, 422);
         }
 
-        $courses = $DB->get_records_select('course', 'idnumber LIKE "%|'.$idnumber.'|%"', null, 'id', '*', null, null);
+        $courses = $DB->get_records_select('course', 'idnumber LIKE "%'.$idnumber.'%"', null, 'id', '*', null, null);
 
         $coursesinfo = array();
         foreach ($courses as $course) {
