@@ -25,9 +25,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version    = 2013083000;
+$plugin->version    = 2013112900;
 $plugin->requires   = 2010112400;
 $plugin->component  = 'local_leapwebservices';
 $plugin->cron       = 0;
 $plugin->maturity   = MATURITY_STABLE;
-$plugin->release    = '0.3.1';
+$plugin->release    = '0.3.2';
