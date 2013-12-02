@@ -156,6 +156,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
 ## History
 
+* 2013-12-02, v0.3.3: Removed hardcoded mdl_ table prefixes and version bump.
 * 2013-11-29, v0.3.2: Version bump and minor code changes to test at Merthyr.
 * 2013-11-27, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
 * 2013-08-30, v0.3.1: Removed Moodle user table fields which no longer exist, preventing stack traces in the Moodle/Apache logs.
