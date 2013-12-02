@@ -280,7 +280,9 @@ class local_leapwebservices_external extends external_api {
         $params = self::validate_parameters(self::get_users_by_username_parameters(),
             array('usernames'=>$usernames));
 
-        $users = user_get_users_by_username($params['usernames']);
+        // Changing out deprecated core function for new one.
+        // /user/externallib.php:396
+        $users = get_users_by_field('username', $params['usernames']);
         $result = array();
         foreach ($users as $user) {
 
