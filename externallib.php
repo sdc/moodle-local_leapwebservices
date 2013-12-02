@@ -60,7 +60,8 @@ class local_leapwebservices_external extends external_api {
         }
 
         $courses = $DB->get_records_sql("SELECT DISTINCT c.id AS id, c.fullname, c.shortname, c.idnumber, c.visible
-            FROM mdl_role_assignments ra, mdl_user u, mdl_course c, mdl_context cxt, mdl_role r
+            FROM ".$CFG->prefix."role_assignments ra, ".$CFG->prefix."user u,
+                ".$CFG->prefix."course c, ".$CFG->prefix."context cxt, ".$CFG->prefix."role r
             WHERE ra.userid = u.id
             AND ra.contextid = cxt.id
             AND cxt.contextlevel = 50
