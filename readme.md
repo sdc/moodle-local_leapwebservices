@@ -154,6 +154,261 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     **Note:** If you experience problems with any of the above steps, please contact us via the contact options on [leap-ilp.com](http://leap-ilp.com) or by [opening an issue here on GitHub](https://github.com/sdc/moodle-local_leapwebservices/issues).
 
+
+## Using the web services
+
+Here is a brief guide to how to access the web services via a web browser. The query is always passed as a correctly-formatted URL, and the response is always given as XML.
+
+
+### `get_user_courses`
+
+* Pass: a user's username
+* Returns: a list of courses the user is enrolled on
+    * id - the course id
+    * shortname - the course's short name
+    * fullname - the course's full name
+    * idnumber - the idnumber of the course (if given)
+    * visible - 1 for visible, 0 for hidden
+    * canedit - 1 if the specified user has editing rights to this course, 0 if not
+
+Use a URL with the following format:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_user_courses&username=USERNAME`
+
+...where *YOURTOKEN* is the token created within Moodle, and *USERNAME* is the username of the Moode user you are querying, e.g.:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_user_courses&username=paulvaughan`
+
+The above query should return the following data structure (data for example purposes only):
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <RESPONSE>
+      <MULTIPLE>
+        <SINGLE>
+          <KEY name="id">
+            <VALUE>1234</VALUE>
+          </KEY>
+          <KEY name="shortname">
+            <VALUE>MuTech</VALUE>
+          </KEY>
+          <KEY name="fullname">
+            <VALUE>Music Technology</VALUE>
+          </KEY>
+          <KEY name="idnumber">
+            <VALUE>MT001</VALUE>
+          </KEY>
+          <KEY name="visible">
+            <VALUE>1</VALUE>
+          </KEY>
+          <KEY name="canedit">
+            <VALUE>1</VALUE>
+          </KEY>
+        </SINGLE>
+        <SINGLE>
+          <KEY name="id">
+            <VALUE>4096</VALUE>
+          </KEY>
+          <KEY name="shortname">
+            <VALUE>SysA</VALUE>
+          </KEY>
+          <KEY name="fullname">
+            <VALUE>Systems Analysis</VALUE>
+          </KEY>
+          <KEY name="idnumber">
+            <VALUE></VALUE>
+          </KEY>
+          <KEY name="visible">
+            <VALUE>1</VALUE>
+          </KEY>
+          <KEY name="canedit">
+            <VALUE>0</VALUE>
+          </KEY>
+        </SINGLE>
+      </MULTIPLE>
+    </RESPONSE>
+
+**Note:** The `<SINGLE>` element will appear as many times as there are courses *USERNAME* is enrolled on.
+
+
+### `get_courses_by_idnumber`
+
+* Pass: a course's idnumber (not to be confused with a course's id)
+* Returns: a list of courses the user is enrolled on (including but not limited to):
+    * id - the course id
+    * shortname - the course's short name
+    * categoryid - the id of the category the course is in
+    * fullname - the course's full name
+    * idnumber - the idnumber of the course (slightly redundant, but may be slightly different to that passed in)
+    * summary - a summary of the course
+    * format - the course's format (e.g. topics, weeks, grid)
+    * startdate - the start date, in Unix epoch format
+    * visible - 1 for visible, 0 for hidden
+
+Use a URL with the following format:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_courses_by_idnumber&idnumber=IDNUMBER`
+
+...where *YOURTOKEN* is the token created within Moodle, and *IDNUMBER* is in a course's `idnumber` field, e.g.:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_courses_by_idnumber&idnumber=paulscourse1234`
+
+The above query should return the following data structure (data for example purposes only):
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <RESPONSE>
+      <MULTIPLE>
+        <SINGLE>
+          <KEY name="id">
+            <VALUE>1234</VALUE>
+          </KEY>
+          <KEY name="shortname">
+            <VALUE>MuTech</VALUE>
+          </KEY>
+          <KEY name="categoryid">
+            <VALUE>123</VALUE>
+          </KEY>
+          <KEY name="categorysortorder">
+            <VALUE>12345</VALUE>
+          </KEY>
+          <KEY name="fullname">
+            <VALUE>Music Technology</VALUE>
+          </KEY>
+          <KEY name="idnumber">
+            <VALUE>MT001</VALUE>
+          </KEY>
+          <KEY name="summary">
+            <VALUE>From 8-tracks to 24bit, 96kHz recording, we have the lot.</VALUE>
+          </KEY>
+          <KEY name="summaryformat">
+            <VALUE>1</VALUE>
+          </KEY>
+          <KEY name="format">
+            <VALUE>topics</VALUE>
+          </KEY>
+          <KEY name="showgrades">
+            <VALUE>1</VALUE>
+          </KEY>
+          <KEY name="newsitems">
+            <VALUE>8</VALUE>
+          </KEY>
+          <KEY name="startdate">
+            <VALUE>1388534400</VALUE>
+          </KEY>
+          <KEY name="maxbytes">
+            <VALUE>10485760</VALUE>
+          </KEY>
+          <KEY name="showreports">
+            <VALUE>0</VALUE>
+          </KEY>
+          <KEY name="visible">
+            <VALUE>1</VALUE>
+          </KEY>
+          <KEY name="groupmode">
+            <VALUE>0</VALUE>
+          </KEY>
+          <KEY name="groupmodeforce">
+            <VALUE>0</VALUE>
+          </KEY>
+          <KEY name="defaultgroupingid">
+            <VALUE>0</VALUE>
+          </KEY>
+          <KEY name="timecreated">
+            <VALUE>1356998400</VALUE>
+          </KEY>
+          <KEY name="timemodified">
+            <VALUE>1356998403</VALUE>
+          </KEY>
+          <KEY name="enablecompletion">
+            <VALUE>0</VALUE>
+          </KEY>
+          <KEY name="completionnotify">
+            <VALUE>0</VALUE>
+          </KEY>
+          <KEY name="lang">
+            <VALUE></VALUE>
+          </KEY>
+          <KEY name="forcetheme">
+            <VALUE></VALUE>
+          </KEY>
+        </SINGLE>
+      </MULTIPLE>
+    </RESPONSE>
+
+**Note:** The `<SINGLE>` element will appear as many times as there are courses which have *IDNUMBER* in the `idnumber` field.
+
+
+
+
+
+
+
+### `get_users_by_username`
+
+* Pass: one or more usernames
+* Returns: a list of courses the user is enrolled on (including but not limited to):
+    * id - the user's id
+
+Use a URL with the following format:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_users_by_username&usernames[]=USERNAME&usernames[]=USERNAME&usernames[]=USERNAME`
+
+...where *YOURTOKEN* is the token created within Moodle, and **each** *USERNAME* is a different user's username, e.g.:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_users_by_username&usernames[]=paulvaughan&usernames[]=kevinhughes&usernames[]=greypoupon`
+
+The above query should return the following data structure (data for example purposes only):
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <RESPONSE>
+      <MULTIPLE>
+        <SINGLE>
+          <KEY name="id">
+            <VALUE>1234</VALUE>
+          </KEY>
+        </SINGLE>
+      </MULTIPLE>
+    </RESPONSE>
+
+**Note:** The `<SINGLE>` element will appear as many times as USERNAME was supplied in the URL.
+
+
+
+
+
+
+
+
+### `get_assignments_by_username`
+
+* Pass: a user's username
+* Returns: a list of assignments (including but not limited to):
+    * id - the user's id
+
+Use a URL with the following format:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_assignments_by_username&username=USERNAME`
+
+...where *YOURTOKEN* is the token created within Moodle, and *USERNAME* is a user's username, e.g.:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_assignments_by_username&username=paulvaughan`
+
+The above query should return the following data structure (data for example purposes only):
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <RESPONSE>
+      <MULTIPLE>
+        <SINGLE>
+          <KEY name="id">
+            <VALUE>1234</VALUE>
+          </KEY>
+        </SINGLE>
+      </MULTIPLE>
+    </RESPONSE>
+
+**Note:** The `<SINGLE>` element will appear as many times as there are assignments assigned to *USERNAME*.
+
+
+
 ## History
 
 * 2013-12-02, v0.3.3: Removed hardcoded mdl_ table prefixes and version bump.
