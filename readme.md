@@ -337,6 +337,78 @@ The above query should return the following data structure (data for example pur
 **Note:** The `<SINGLE>` element will appear as many times as there are courses which have *IDNUMBER* in the `idnumber` field.
 
 
+
+
+
+
+
+### `get_users_by_username`
+
+* Pass: one or more usernames
+* Returns: a list of courses the user is enrolled on (including but not limited to):
+    * id - the user's id
+
+Use a URL with the following format:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_users_by_username&usernames[]=USERNAME&usernames[]=USERNAME&usernames[]=USERNAME`
+
+...where *YOURTOKEN* is the token created within Moodle, and **each** *USERNAME* is a different user's username, e.g.:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_users_by_username&usernames[]=paulvaughan&usernames[]=kevinhughes&usernames[]=greypoupon`
+
+The above query should return the following data structure (data for example purposes only):
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <RESPONSE>
+      <MULTIPLE>
+        <SINGLE>
+          <KEY name="id">
+            <VALUE>1234</VALUE>
+          </KEY>
+        </SINGLE>
+      </MULTIPLE>
+    </RESPONSE>
+
+**Note:** The `<SINGLE>` element will appear as many times as USERNAME was supplied in the URL.
+
+
+
+
+
+
+
+
+### `get_assignments_by_username`
+
+* Pass: a user's username
+* Returns: a list of assignments (including but not limited to):
+    * id - the user's id
+
+Use a URL with the following format:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_assignments_by_username&username=USERNAME`
+
+...where *YOURTOKEN* is the token created within Moodle, and *USERNAME* is a user's username, e.g.:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_assignments_by_username&username=paulvaughan`
+
+The above query should return the following data structure (data for example purposes only):
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <RESPONSE>
+      <MULTIPLE>
+        <SINGLE>
+          <KEY name="id">
+            <VALUE>1234</VALUE>
+          </KEY>
+        </SINGLE>
+      </MULTIPLE>
+    </RESPONSE>
+
+**Note:** The `<SINGLE>` element will appear as many times as there are assignments assigned to *USERNAME*.
+
+
+
 ## History
 
 * 2013-12-02, v0.3.3: Removed hardcoded mdl_ table prefixes and version bump.
