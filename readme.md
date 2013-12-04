@@ -344,6 +344,8 @@ The above query should return the following data structure (data for example pur
 
 ### `get_users_by_username`
 
+**Note:** this function will only work with Moodle 2.5 or later. Calling this function with Moodle 2.4 or earlier will result in an exception being thrown.
+
 * Pass: one or more usernames
 * Returns: a list of courses the user is enrolled on (including but not limited to):
     * id - the user's id
@@ -411,6 +413,7 @@ The above query should return the following data structure (data for example pur
 
 ## History
 
+* 2013-12-xx, v0.3.4: Fixed the 'get_users_by_username' webservice for Moodle 2.5 or greater only; wrote API documentation; version bump.
 * 2013-12-02, v0.3.3: Removed hardcoded mdl_ table prefixes and version bump.
 * 2013-11-29, v0.3.2: Version bump and minor code changes to test at Merthyr.
 * 2013-11-27, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
