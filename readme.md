@@ -157,7 +157,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
 ## Using the web services
 
-Here is a brief guide to how to access the web services via a web browser.
+Here is a brief guide to how to access the web services via a web browser. The query is always passed as a correctly-formatted URL, and the response is always given as XML.
 
 
 ### `get_user_courses`
@@ -227,26 +227,28 @@ The above query should return the following data structure (data for example pur
       </MULTIPLE>
     </RESPONSE>
 
-
-
+**Note:** The `<SINGLE>` element will appear as many times as there are courses *USERNAME* is enrolled on.
 
 
 ### `get_courses_by_idnumber`
 
-* Pass: a course's idnumber (not to be confised with a course's id)
-* Returns: a list of courses the user is enrolled on
+* Pass: a course's idnumber (not to be confused with a course's id)
+* Returns: a list of courses the user is enrolled on (including but not limited to):
     * id - the course id
     * shortname - the course's short name
+    * categoryid - the id of the category the course is in
     * fullname - the course's full name
-    * idnumber - the idnumber of the course (if given)
+    * idnumber - the idnumber of the course (slightly redundant, but may be slightly different to that passed in)
+    * summary - a summary of the course
+    * format - the course's format (e.g. topics, weeks, grid)
+    * startdate - the start date, in Unix epoch format
     * visible - 1 for visible, 0 for hidden
-    * canedit - 1 if the specified user has editing rights to this course, 0 if not
 
 Use a URL with the following format:
 
 `http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_courses_by_idnumber&idnumber=IDNUMBER`
 
-...where *YOURTOKEN* is the token created within Moodle, and *IDNUMBER* is the contents of a course's `idnumber` field, e.g.:
+...where *YOURTOKEN* is the token created within Moodle, and *IDNUMBER* is in a course's `idnumber` field, e.g.:
 
 `http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_courses_by_idnumber&idnumber=paulscourse1234`
 
@@ -332,6 +334,7 @@ The above query should return the following data structure (data for example pur
       </MULTIPLE>
     </RESPONSE>
 
+**Note:** The `<SINGLE>` element will appear as many times as there are courses which have *IDNUMBER* in the `idnumber` field.
 
 
 ## History
