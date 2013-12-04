@@ -278,7 +278,25 @@ class local_leapwebservices_external extends external_api {
         require_once($CFG->dirroot . "/user/profile/lib.php");
 
         $params = self::validate_parameters(self::get_users_by_username_parameters(),
-            array('usernames'=>$usernames));
+            array('usernames' => $usernames));
+
+        if (empty($params)) {
+            header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'usernames\'] empty.)', true, 422);
+        }
+
+        // Check for Moodle 2.5 function; fail gracefully if not found.
+        if(!function_exists('get_users_by_field')) {
+            $passedunames = '';
+            foreach ($username as $uname) {
+                $passedunames = $uname.' ';
+            }
+            $passedunames = trim($passedunames);
+
+            $exceptionparam             = new stdClass();
+            $exceptionparam->message    = 'Function \'get_users_by_field()\' is not available in this version of Moodle.'
+            $exceptionparam->courseid   = $passeduname;
+            throw new moodle_exception(get_string('errorcoursecontextnotvalid', 'webservice', $exceptionparam));
+        }
 
         // Changing out deprecated core function for new one.
         // /user/externallib.php:396
