@@ -282,6 +282,7 @@ class local_leapwebservices_external extends external_api {
 
         // Changing out deprecated core function for new one.
         // /user/externallib.php:396
+        // get_users_by_field ONLY EXISTS IN MOODLE 2.5 AND ONWARDS!
         $users = get_users_by_field('username', $params['usernames']);
         $result = array();
         foreach ($users as $user) {
