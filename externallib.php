@@ -276,6 +276,7 @@ class local_leapwebservices_external extends external_api {
         global $CFG;
         require_once($CFG->dirroot . "/user/lib.php");
         require_once($CFG->dirroot . "/user/profile/lib.php");
+        require_once($CFG->dirroot . "/user/externallib.php");
 
         $params = self::validate_parameters(self::get_users_by_username_parameters(),
             array('usernames' => $usernames));
@@ -284,56 +285,41 @@ class local_leapwebservices_external extends external_api {
             header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'usernames\'] empty.)', true, 422);
         }
 
-        // Check for Moodle 2.5 function; fail gracefully if not found.
-        if(!function_exists('get_users_by_field')) {
-            $passedunames = '';
-            foreach ($username as $uname) {
-                $passedunames = $uname.' ';
-            }
-            $passedunames = trim($passedunames);
-
-            $exceptionparam             = new stdClass();
-            $exceptionparam->message    = 'Function \'get_users_by_field()\' is not available in this version of Moodle.'
-            $exceptionparam->courseid   = $passeduname;
-            throw new moodle_exception(get_string('errorcoursecontextnotvalid', 'webservice', $exceptionparam));
-        }
-
         // Changing out deprecated core function for new one.
-        // /user/externallib.php:396
         // get_users_by_field ONLY EXISTS IN MOODLE 2.5 AND ONWARDS!
-        $users = get_users_by_field('username', $params['usernames']);
+        // TODO: Check if this is going to work, and fail gracefully if not.
+        $users = core_user_external::get_users_by_field('username', $params['usernames']);
+        
         $result = array();
         foreach ($users as $user) {
 
-            $context = get_context_instance(CONTEXT_USER, $user->id);
+            $context = get_context_instance(CONTEXT_USER, $user['id']);
+            try {
+                self::validate_context($context);
+            } catch (Exception $e) {
+                $exceptionparam             = new stdClass();
+                $exceptionparam->message    = $e->getMessage();
+                $exceptionparam->userid     = $user['id'];
+                throw new moodle_exception(
+                    get_string('errorusercontextnotvalid', 'local_leapwebservices', $exceptionparam));
+            }
             require_capability('moodle/user:viewalldetails', $context);
-            self::validate_context($context);
 
             if (empty($user->deleted)) {
 
                 $userarray = array();
-                $userarray['id']                = $user->id;
-                $userarray['username']          = $user->username;
-                $userarray['firstname']         = $user->firstname;
-                $userarray['lastname']          = $user->lastname;
-                $userarray['email']             = $user->email;
-                $userarray['auth']              = $user->auth;
-                $userarray['confirmed']         = $user->confirmed;
-                $userarray['idnumber']          = $user->idnumber;
-                $userarray['lang']              = $user->lang;
-                $userarray['theme']             = $user->theme;
-                $userarray['timezone']          = $user->timezone;
-                $userarray['mailformat']        = $user->mailformat;
-                $userarray['description']       = $user->description;
-                $userarray['descriptionformat'] = $user->descriptionformat;
-                $userarray['city']              = $user->city;
-                $userarray['country']           = $user->country;
-                $userarray['customfields']      = array();
-                $customfields                   = profile_user_record($user->id);
-                $customfields                   = (array) $customfields;
-                foreach ($customfields as $key => $value) {
-                    $userarray['customfields'][] = array('type' => $key, 'value' => $value);
-                }
+                $userarray['id']                    = $user['id'];
+                $userarray['username']              = $user['username'];
+                $userarray['firstname']             = $user['firstname'];
+                $userarray['lastname']              = $user['lastname'];
+                $userarray['email']                 = $user['email'];
+
+                //$userarray['customfields']      = array();
+                //$customfields                   = profile_user_record($user->id);
+                //$customfields                   = (array) $customfields;
+                //foreach ($customfields as $key => $value) {
+                //    $userarray['customfields'][] = array('type' => $key, 'value' => $value);
+                //}
 
                 $result[] = $userarray;
             }
@@ -355,27 +341,16 @@ class local_leapwebservices_external extends external_api {
                     'firstname'         => new external_value(PARAM_NOTAGS, 'The first name(s) of the user'),
                     'lastname'          => new external_value(PARAM_NOTAGS, 'The family name of the user'),
                     'email'             => new external_value(PARAM_TEXT, 'An email address - allow email as root@localhost'),
-                    'auth'              => new external_value(PARAM_SAFEDIR, 'Auth plugins include manual, ldap, imap, etc'),
-                    'confirmed'         => new external_value(PARAM_NUMBER, 'Active user: 1 if confirmed, 0 otherwise'),
-                    'idnumber'          => new external_value(PARAM_RAW, 'An arbitrary ID code number perhaps from the institution'),
-                    'lang'              => new external_value(PARAM_SAFEDIR, 'Language code such as "en", must exist on server'),
-                    'theme'             => new external_value(PARAM_SAFEDIR, 'Theme name such as "standard", must exist on server'),
-                    'timezone'          => new external_value(PARAM_ALPHANUMEXT, 'Timezone code such as Australia/Perth, or 99 for default'),
-                    'mailformat'        => new external_value(PARAM_INTEGER, 'Mail format code is 0 for plain text, 1 for HTML etc'),
-                    'description'       => new external_value(PARAM_RAW, 'User profile description'),
-                    'descriptionformat' => new external_value(PARAM_INT, 'User profile description format'),
-                    'city'              => new external_value(PARAM_NOTAGS, 'Home city of the user'),
-                    'country'           => new external_value(PARAM_ALPHA, 'Home country code of the user, such as AU or CZ'),
-                    'customfields'      => new external_multiple_structure(
-                        new external_single_structure(
-                            array(
-                                'type'  => new external_value(PARAM_ALPHANUMEXT, 'The name of the custom field'),
-                                'value' => new external_value(PARAM_RAW, 'The value of the custom field')
-                            )
-                        ),
-                    'User custom fields (also known as user profile fields)',
-                    VALUE_OPTIONAL
-                    )
+                    //'customfields'      => new external_multiple_structure(
+                    //    new external_single_structure(
+                    //        array(
+                    //            'type'  => new external_value(PARAM_ALPHANUMEXT, 'The name of the custom field'),
+                    //            'value' => new external_value(PARAM_RAW, 'The value of the custom field')
+                    //        )
+                    //    ),
+                    //'User custom fields (also known as user profile fields)',
+                    //VALUE_OPTIONAL
+                    //)
                 )
             )
         );
