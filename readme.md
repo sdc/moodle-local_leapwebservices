@@ -422,17 +422,19 @@ The above query should return the following data structure (data for example pur
 **Note:** The `<SINGLE>` element will appear as many times as USERNAME was supplied in the URL.
 
 
-
-
-
-
-
-
 ### `get_assignments_by_username`
 
 * Pass: a user's username
-* Returns: a list of assignments (including but not limited to):
-    * id - the user's id
+* Returns: a list of assignments:
+    * id - the assignment's id
+    * name - the assignment's name
+    * intro - the assignment's introductory text (stripped of HTML tags)
+    * allowsubmissionsfromdate - the date and time at which submissions can be made from, in Unix epoch format
+    * allowsubmissionsfromdate-kev - same as above but in ISO 8601 format
+    * duedate - the date and time at which submissions can no longer be made, in Unix epoch format
+    * duedate-kev - same as above but in ISO 8601 format
+    * course - the id of the course the assignment is in
+    * instance - the assignment's instance id
 
 Use a URL with the following format:
 
@@ -449,7 +451,31 @@ The above query should return the following data structure (data for example pur
       <MULTIPLE>
         <SINGLE>
           <KEY name="id">
-            <VALUE>1234</VALUE>
+            <VALUE>123</VALUE>
+          </KEY>
+          <KEY name="name">
+            <VALUE>December Assignment</VALUE>
+          </KEY>
+          <KEY name="intro">
+            <VALUE>This is going to be the best assignment about December ever.</VALUE>
+          </KEY>
+          <KEY name="allowsubmissionsfromdate">
+            <VALUE>1388534400</VALUE>
+          </KEY>
+          <KEY name="allowsubmissionsfromdate-kev">
+            <VALUE>2014-01-01T00:00:00+00:00</VALUE>
+          </KEY>
+          <KEY name="duedate">
+            <VALUE>1388534401</VALUE>
+          </KEY>
+          <KEY name="duedate-kev">
+            <VALUE>2014-01-01T00:00:01+00:00</VALUE>
+          </KEY>
+          <KEY name="course">
+            <VALUE>123</VALUE>
+          </KEY>
+          <KEY name="instance">
+            <VALUE>12345</VALUE>
           </KEY>
         </SINGLE>
       </MULTIPLE>
@@ -457,10 +483,10 @@ The above query should return the following data structure (data for example pur
 
 **Note:** The `<SINGLE>` element will appear as many times as there are assignments assigned to *USERNAME*.
 
-
-
+ 
 ## History
 
+* 2013-12-05, v0.3.5: Fixed the 'get_assignments_by_username' webservice to use newer 'assign' rather than older 'assignments' system; wrote API documentation; version bump.
 * 2013-12-05, v0.3.4: Fixed the 'get_users_by_username' webservice for Moodle 2.5 or greater only; wrote API documentation; version bump.
 * 2013-12-02, v0.3.3: Removed hardcoded mdl_ table prefixes and version bump.
 * 2013-11-29, v0.3.2: Version bump and minor code changes to test at Merthyr.
