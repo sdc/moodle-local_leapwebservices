@@ -337,18 +337,18 @@ The above query should return the following data structure (data for example pur
 **Note:** The `<SINGLE>` element will appear as many times as there are courses which have *IDNUMBER* in the `idnumber` field.
 
 
-
-
-
-
-
 ### `get_users_by_username`
 
 **Note:** this function will only work with Moodle 2.5 or later. Calling this function with Moodle 2.4 or earlier will result in an exception being thrown.
 
 * Pass: one or more usernames
-* Returns: a list of courses the user is enrolled on (including but not limited to):
+* Returns: a list of user details:
     * id - the user's id
+    * username - the user's username (slightly redundant)
+    * firstname - the user's first name
+    * lastname - the user's last name
+    * email - the user's email address
+    (There is potential for considerably more detail to be returned.)
 
 Use a URL with the following format:
 
@@ -358,6 +358,8 @@ Use a URL with the following format:
 
 `http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_users_by_username&usernames[]=paulvaughan&usernames[]=kevinhughes&usernames[]=greypoupon`
 
+**Note:** You may add as many `&usernames[]=USERNAME` structures to the URL as you require, but keep it sensible.
+
 The above query should return the following data structure (data for example purposes only):
 
     <?xml version="1.0" encoding="UTF-8" ?>
@@ -365,7 +367,53 @@ The above query should return the following data structure (data for example pur
       <MULTIPLE>
         <SINGLE>
           <KEY name="id">
-            <VALUE>1234</VALUE>
+            <VALUE>2</VALUE>
+          </KEY>
+          <KEY name="username">
+            <VALUE>paulvaughan</VALUE>
+          </KEY>
+          <KEY name="firstname">
+            <VALUE>Paul</VALUE>
+          </KEY>
+          <KEY name="lastname">
+            <VALUE>Vaughan</VALUE>
+          </KEY>
+          <KEY name="email">
+            <VALUE>paulvaughan@example.ac.uk</VALUE>
+          </KEY>
+        </SINGLE>
+        <SINGLE>
+          <KEY name="id">
+            <VALUE>27</VALUE>
+          </KEY>
+          <KEY name="username">
+            <VALUE>kevinhughes</VALUE>
+          </KEY>
+          <KEY name="firstname">
+            <VALUE>Kevin</VALUE>
+          </KEY>
+          <KEY name="lastname">
+            <VALUE>Hughes</VALUE>
+          </KEY>
+          <KEY name="email">
+            <VALUE>kevinhughes@example.ac.uk</VALUE>
+          </KEY>
+        </SINGLE>
+        <SINGLE>
+          <KEY name="id">
+            <VALUE>101</VALUE>
+          </KEY>
+          <KEY name="username">
+            <VALUE>greypoupon</VALUE>
+          </KEY>
+          <KEY name="firstname">
+            <VALUE>Grey</VALUE>
+          </KEY>
+          <KEY name="lastname">
+            <VALUE>Poupon</VALUE>
+          </KEY>
+          <KEY name="email">
+            <VALUE>greypoupon@example.ac.uk</VALUE>
           </KEY>
         </SINGLE>
       </MULTIPLE>
@@ -413,7 +461,7 @@ The above query should return the following data structure (data for example pur
 
 ## History
 
-* 2013-12-xx, v0.3.4: Fixed the 'get_users_by_username' webservice for Moodle 2.5 or greater only; wrote API documentation; version bump.
+* 2013-12-05, v0.3.4: Fixed the 'get_users_by_username' webservice for Moodle 2.5 or greater only; wrote API documentation; version bump.
 * 2013-12-02, v0.3.3: Removed hardcoded mdl_ table prefixes and version bump.
 * 2013-11-29, v0.3.2: Version bump and minor code changes to test at Merthyr.
 * 2013-11-27, v0.3.1: Documentation changes only: how to configure Moodle to use web services. No code changes.
