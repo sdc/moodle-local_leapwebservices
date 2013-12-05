@@ -1,8 +1,10 @@
 # Moodle 2 Web Services for Leap
 
+
 ## Introduction
 
 This plugin contains the web services required for integration between [Moodle](http://moodle.org) 2 and [Leap](http://leap-ilp.com), South Devon College's ILP ( individual learning plan) system. More info about Leap can be found at [leap-ilp.com](http://leap-ilp.com).
+
 
 ## Purpose
 
@@ -14,6 +16,14 @@ This local Moodle plugin has it's own repository located at [github.com/sdc/mood
 
 (**Note:** This plugin is only required if you are using Leap ILP from south Devon College. It has no use in any other circumstance. :)
 
+
+## Moodle versions
+
+This plugin has been written to work with South Devon College's currently-in-production version of Moodle, which at this time is 2.5. This plugin also works in Moodle 2.4 except the `get_users_by_username` function, which requires a function not found in Moodle 2.4 or earlier.
+
+Earlier versions (2.0 to 2.3) have not been exhaustively tested with this plugin.
+
+
 ## Licence
 
 Copyright &copy; 2011-2013 South Devon College.
@@ -23,6 +33,7 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 ## Files
 
@@ -49,9 +60,10 @@ Before installation, please check you have the following files and structure:
 * Log in to your Moodle site as an Administrator and visit the Notifications page
 * The plugin should install without error. If you receive an error, please report it [here](https://github.com/sdc/moodle-local_leapwebservices/issues)
 
+
 ## Configuration
 
-(**Note:** This guide has been written using Moodle 2.5, which contains many changes from the 2.0 release: your mileage may vary.)
+(**Note:** This guide has been written using Moodle 2.5. If you are using a different version of Moodle, your mileage may vary.)
 
 This plugin has no configuration itself, however your Moodle installation will require configuration to correctly use web services. 
 
@@ -162,8 +174,8 @@ Here is a brief guide to how to access the web services via a web browser. The q
 
 ### `get_user_courses`
 
-* Pass: a user's username
-* Returns: a list of courses the user is enrolled on
+* Pass: a user's username.
+* Returns: a list of courses the user is enrolled on:
     * id - the course id
     * shortname - the course's short name
     * fullname - the course's full name
@@ -175,7 +187,7 @@ Use a URL with the following format:
 
 `http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_user_courses&username=USERNAME`
 
-...where *YOURTOKEN* is the token created within Moodle, and *USERNAME* is the username of the Moode user you are querying, e.g.:
+...where *YOURTOKEN* is the token created within Moodle, and *USERNAME* is the username of the Moodle user you are querying, e.g.:
 
 `http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_user_courses&username=paulvaughan`
 
@@ -232,7 +244,7 @@ The above query should return the following data structure (data for example pur
 
 ### `get_courses_by_idnumber`
 
-* Pass: a course's idnumber (not to be confused with a course's id)
+* Pass: a course's idnumber (not to be confused with a course's id).
 * Returns: a list of courses the user is enrolled on (including but not limited to):
     * id - the course id
     * shortname - the course's short name
@@ -341,7 +353,7 @@ The above query should return the following data structure (data for example pur
 
 **Note:** this function will only work with Moodle 2.5 or later. Calling this function with Moodle 2.4 or earlier will result in an exception being thrown.
 
-* Pass: one or more usernames
+* Pass: one or more usernames.
 * Returns: a list of user details:
     * id - the user's id
     * username - the user's username (slightly redundant)
@@ -424,7 +436,7 @@ The above query should return the following data structure (data for example pur
 
 ### `get_assignments_by_username`
 
-* Pass: a user's username
+* Pass: a user's username.
 * Returns: a list of assignments:
     * id - the assignment's id
     * name - the assignment's name
