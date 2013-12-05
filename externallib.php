@@ -386,32 +386,32 @@ class local_leapwebservices_external extends external_api {
 
         $user = $DB->get_record('user', array('username' => $params['username']));
         $courses = enrol_get_users_courses($user->id, false, '*');
-        if (!empty($courses)) {
+        if (!empty($courses)) {   
 
             $contents = array();
             foreach ($courses as $course) {
-                $contents[] = $DB->get_records('assignment', array('course' => $course->id), 'timedue ASC', 'id, name, intro, timeavailable, timedue, course');
+                $contents[] = $DB->get_records('assign', array('course' => $course->id), 'duedate ASC', 'id, name, intro, allowsubmissionsfromdate, duedate, course');
             }
 
             $result = array();
             foreach ($contents as $morecontents) {
                 foreach ($morecontents as $content) {
                     $assarray = array();
-                    $assarray['id']                 = $content->id;
-                    $assarray['name']               = $content->name;
-                    $assarray['intro']              = $content->intro;
-                    $assarray['timeavailable']      = $content->timeavailable;
-                    $assarray['timeavailable-kev']  = date('c', $content->timeavailable);
-                    $assarray['timedue']            = $content->timedue;
-                    $assarray['timedue-kev']        = date('c', $content->timedue);
-                    $assarray['course']             = $content->course;
+                    $assarray['id']                             = $content->id;
+                    $assarray['name']                           = $content->name;
+                    $assarray['intro']                          = strip_tags($content->intro);
+                    $assarray['allowsubmissionsfromdate']       = $content->allowsubmissionsfromdate;
+                    $assarray['allowsubmissionsfromdate-kev']   = date('c', $content->allowsubmissionsfromdate);
+                    $assarray['duedate']                        = $content->duedate;
+                    $assarray['duedate-kev']                    = date('c', $content->duedate);
+                    $assarray['course']                         = $content->course;
 
                     $sql = "SELECT cm.id AS id
-                        FROM ".$CFG->prefix."assignment AS a, ".$CFG->prefix."course_modules AS cm, ".$CFG->prefix."modules AS m
+                        FROM ".$CFG->prefix."assign AS a, ".$CFG->prefix."course_modules AS cm, ".$CFG->prefix."modules AS m
                         WHERE a.course = ".$content->course."
                         AND a.course = cm.course
                         AND cm.module = m.id
-                        AND m.name = 'assignment'
+                        AND m.name = 'assign'
                         AND cm.instance = a.id
                         AND a.id = ".$content->id.";";
                     $instance_res = $DB->get_record_sql($sql);
@@ -433,15 +433,15 @@ class local_leapwebservices_external extends external_api {
         return new external_multiple_structure(
             new external_single_structure(
                 array(
-                    'id'                => new external_value(PARAM_INTEGER, 'ID of the assignment'),
-                    'name'              => new external_value(PARAM_TEXT, 'Assignment name'),
-                    'intro'             => new external_value(PARAM_TEXT, 'Assignment introduction, may contain HTML'),
-                    'timeavailable'     => new external_value(PARAM_INTEGER, 'Date available from (set date)'),
-                    'timeavailable-kev' => new external_value(PARAM_RAW, 'Date available from (set date) in Kev format'),
-                    'timedue'           => new external_value(PARAM_INTEGER, 'Date available to (due date)'),
-                    'timedue-kev'       => new external_value(PARAM_RAW, 'Date available to (due date) in Kev format'),
-                    'course'            => new external_value(PARAM_INTEGER, 'ID of the course the assignment is set against'),
-                    'instance'          => new external_value(PARAM_INTEGER, 'Module instance'),
+                    'id'                            => new external_value(PARAM_INTEGER, 'ID of the assignment'),
+                    'name'                          => new external_value(PARAM_TEXT, 'Assignment name'),
+                    'intro'                         => new external_value(PARAM_TEXT, 'Assignment introduction, may contain HTML'),
+                    'allowsubmissionsfromdate'      => new external_value(PARAM_INTEGER, 'Date available from (set date)'),
+                    'allowsubmissionsfromdate-kev'  => new external_value(PARAM_RAW, 'Date available from (set date) in Kev format'),
+                    'duedate'                       => new external_value(PARAM_INTEGER, 'Date available to (due date)'),
+                    'duedate-kev'                   => new external_value(PARAM_RAW, 'Date available to (due date) in Kev format'),
+                    'course'                        => new external_value(PARAM_INTEGER, 'ID of the course the assignment is set against'),
+                    'instance'                      => new external_value(PARAM_INTEGER, 'Module instance'),
                 )
             )
         );
