@@ -498,6 +498,7 @@ The above query should return the following data structure (data for example pur
  
 ## History
 
+* 2014-05-08, v0.3.6: fixed deprecated function warnings which were filling the server logs.
 * 2013-12-05, v0.3.5: Fixed the 'get_assignments_by_username' webservice to use newer 'assign' rather than older 'assignments' system; wrote API documentation; version bump.
 * 2013-12-05, v0.3.4: Fixed the 'get_users_by_username' webservice for Moodle 2.5 or greater only; wrote API documentation; version bump.
 * 2013-12-02, v0.3.3: Removed hardcoded mdl_ table prefixes and version bump.
