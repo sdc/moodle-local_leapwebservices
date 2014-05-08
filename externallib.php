@@ -72,7 +72,7 @@ class local_leapwebservices_external extends external_api {
 
         $coursesinfo = array();
         foreach ($courses as $course) {
-            $context = get_context_instance(CONTEXT_COURSE, $course->id);
+            $context = context_course::instance($course->id);
             try {
                 self::validate_context($context);
             } catch (Exception $e) {
@@ -92,7 +92,7 @@ class local_leapwebservices_external extends external_api {
             $courseinfo['visible']      = $course->visible;
 
             $user = $DB->get_record('user', array('username' => $params['username']));
-            $context = get_context_instance(CONTEXT_COURSE, $course->id);
+            $context = context_course::instance($course->id);
             $courseinfo['canedit'] = has_capability('moodle/course:update', $context, $user->id) ? 1 : 0;
 
             $coursesinfo[] = $courseinfo;
