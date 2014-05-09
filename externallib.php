@@ -151,7 +151,7 @@ class local_leapwebservices_external extends external_api {
 
         $coursesinfo = array();
         foreach ($courses as $course) {
-            $context = get_context_instance(CONTEXT_COURSE, $course->id);
+            $context = context_course::instance($course->id);
             try {
                 self::validate_context($context);
             } catch (Exception $e) {
@@ -289,11 +289,11 @@ class local_leapwebservices_external extends external_api {
         // get_users_by_field ONLY EXISTS IN MOODLE 2.5 AND ONWARDS!
         // TODO: Check if this is going to work, and fail gracefully if not.
         $users = core_user_external::get_users_by_field('username', $params['usernames']);
-        
+
         $result = array();
         foreach ($users as $user) {
 
-            $context = get_context_instance(CONTEXT_USER, $user['id']);
+            $context = context_user::instance($user['id']);
             try {
                 self::validate_context($context);
             } catch (Exception $e) {
