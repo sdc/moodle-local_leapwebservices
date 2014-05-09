@@ -59,16 +59,16 @@ class local_leapwebservices_external extends external_api {
             header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', true, 422);
         }
 
-        $courses = $DB->get_records_sql("SELECT DISTINCT c.id AS id, c.fullname, c.shortname, c.idnumber, c.visible
-            FROM ".$CFG->prefix."role_assignments ra, ".$CFG->prefix."user u,
-                ".$CFG->prefix."course c, ".$CFG->prefix."context cxt, ".$CFG->prefix."role r
+         $courses = $DB->get_records_sql("SELECT DISTINCT c.id AS id, c.fullname, c.shortname, c.idnumber, c.visible
+            FROM {role_assignments} ra, {user} u,
+                {course} c, {context} cxt, {role} r
             WHERE ra.userid = u.id
             AND ra.contextid = cxt.id
             AND cxt.contextlevel = 50
             AND cxt.instanceid = c.id
             AND ra.roleid = r.id
-            AND u.username =  \"".$params['username']."\"
-            ORDER BY fullname ASC;");
+            AND u.username = ?
+            ORDER BY fullname ASC;", $params);
 
         $coursesinfo = array();
         foreach ($courses as $course) {
