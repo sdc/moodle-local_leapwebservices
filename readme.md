@@ -512,6 +512,7 @@ The above query should return the following data structure (data for example pur
 
 ## History
 
+* 2014-07-29, v0.4.0: added new service 'get_targets_by_username' to allow Leap to query Moodle for L3VM, MAG and TAG scores.
 * 2014-05-09, v0.3.7: fixed (more) deprecated function warnings.
 * 2014-05-08, v0.3.6: fixed deprecated function warnings which were filling the server logs.
 * 2013-12-05, v0.3.5: Fixed the 'get_assignments_by_username' webservice to use newer 'assign' rather than older 'assignments' system; wrote API documentation; version bump.
