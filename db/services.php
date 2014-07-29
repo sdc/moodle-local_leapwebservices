@@ -60,6 +60,15 @@ $functions = array(
         'type'          => 'read',
         'capabilities'  => 'moodle/user:viewdetails,moodle/user:viewalldetails,moodle/course:view,moodle/course:update',
     ),
+
+    'local_leapwebservices_get_targets_by_username' => array(
+        'classname'     => 'local_leapwebservices_external',
+        'methodname'    => 'get_targets_by_username',
+        'classpath'     => 'local/leapwebservices/externallib.php',
+        'description'   => 'Get L3VA, MAG and TAG for a specific username for all core courses.',
+        'type'          => 'read',
+        'capabilities'  => 'moodle/user:viewdetails,moodle/user:viewalldetails,moodle/course:view,moodle/grade:view,moodle/grade:viewall',
+    ),
 );
 
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.
@@ -70,6 +79,7 @@ $services = array(
             'local_leapwebservices_get_user_courses',
             'local_leapwebservices_get_courses_by_idnumber',
             'local_leapwebservices_get_assignments_by_username',
+            'local_leapwebservices_get_targets_by_username',
         ),
         'restrictedusers'   => 1,
         'enabled'           => 1,
