@@ -3,7 +3,7 @@
 
 ## Introduction
 
-This plugin contains the web services required for integration between [Moodle](http://moodle.org) 2 and [Leap](http://leap-ilp.com), South Devon College's ILP ( individual learning plan) system. More info about Leap can be found at [leap-ilp.com](http://leap-ilp.com).
+This plugin contains the web services required for integration between [Moodle](http://moodle.org) 2 and [Leap](http://leap-ilp.com), South Devon College's ILP (individual learning plan) system. More info about Leap can be found at [leap-ilp.com](http://leap-ilp.com).
 
 
 ## Purpose
@@ -19,14 +19,14 @@ This local Moodle plugin has it's own repository located at [github.com/sdc/mood
 
 ## Moodle versions
 
-This plugin has been written to work with South Devon College's currently-in-production version of Moodle, which at this time is 2.5. This plugin also works in Moodle 2.4 except the `get_users_by_username` function, which requires a function not found in Moodle 2.4 or earlier.
+This plugin has been written to work with South Devon College's currently-in-production version of Moodle, which at this time is 2.7, but has been working in production with 2.6 and 2.5. This plugin also works in Moodle 2.4 except the `get_users_by_username` function, which requires a function not found in Moodle 2.4 or earlier.
 
 Earlier versions (2.0 to 2.3) have not been exhaustively tested with this plugin.
 
 
 ## Licence
 
-Copyright &copy; 2011-2013 South Devon College.
+Copyright &copy; 2011-2014 South Devon College.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -87,6 +87,8 @@ This plugin has no configuration itself, however your Moodle installation will r
 
 5.  Create a new role ("web services") with appropriate protocol capabilities allowed (**webservice/rest:use**). Click on **Administration (block) &rarr; Site Administration &rarr; Users &rarr; Permissions &rarr; Define roles**, and click on **Add role**.
 
+    **TODO: This has changed slightly in Moodle 2.7, with the addition of an extra step (page) and some expanded options. Edit and amend appropriately.**
+
     Type in a relevant short (internal) name and a full (human readable) name, as well as a description (will only be seen by admins).  Ignore *Role archetype*. Check only the **system** check box. Search for and **allow** the following capabilities:
 
     **Web service: REST protocol**
@@ -112,6 +114,9 @@ This plugin has no configuration itself, however your Moodle installation will r
     * moodle/user:viewdetails (View user profiles)
     * moodle/user:viewhiddendetails (View hidden details of users)
 
+    **Gradebook**
+    * moodle/grade:viewall (View all grades)
+
     (**Note:** the best way is to use your web browser's search feature and search for the text exactly as it appears: it will get you to the exact capability or very close.)
 
 6.  Assign the new *web services role* to the *web services user* as a system role: click on **Administration (block) &rarr; Site Administration &rarr; Users &rarr; Permissions &rarr; Assign system roles**.  Click on *webservices* (or whatever you have named your new role), then search in the box on the right for the new *Leap user*, then **add** the new user so the name appears in the box on the right.  It should be the only name in that box.  Return to the **Web services &rarr; Overview** screen.
@@ -120,9 +125,11 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     The results page should show the user as assigned to the *web service* role (what appears on-screen will be whatever you called the web service) and *authenticated user* in *system* context.
 
-    Check that the list of capabilities in *5, above*, is set to **yes** (highlighted in green).  When done, return to the **Web services &rarr; Overview** screen.
+    Check that the list of capabilities in *5, above*, is set to **yes** (possibly highlighted in green, depending on your theme).  When done, return to the **Web services &rarr; Overview** screen.
 
 8.  Click **5. Select a service**.  In the **Built-in services** section you should see an entry for *Leap*, and probably also an entry for the *Moodle mobile web service*, which will be greyed out if this is not turned on via the checkbox at the top of the page. (*Moodle mobile web services* are not required to be turned on for Leap web services to work.)
+
+    **TODO: This has changed slightly in Moodle 2.7: the list of authorised users did not show the already-authorised Leap User. Double-check this is not a bug or mistake following this procedure, and then edit and amend appropriately.**
 
     Clicking on **Authorised users** next to *Leap* will show you a list of users authorised to use the Leap web services. It should show only the user you have assigned, but at the bottom of the page is a section titled **Change settings for the authorised users**: if there are any problems with the assigned user (lacking a particular context) they will be listed here in orange, and will need to be fixed before progressing further. Clicking on the user's name or email address will show some further security options, such as *IP restriction* (so a user can access the web service only from one or a range of IP addresses, blank by default) and a *Valid until* date when the access will cease (off by default). If you change any settings here, click **Update** to save them.
 
@@ -133,6 +140,8 @@ This plugin has no configuration itself, however your Moodle installation will r
 9.  **6. Add functions** and **7. Select a specific user** have already been completed as part of **5. Select a service**, so ignore them. 
 
 10. Click **8. Create a token for a user**.
+
+    **TODO: This first step has changed slightly in Moodle 2.7: instead of typing in the name of a user, you can choose from a list. Edit and amend appropriately.**
 
     In the *Username / user id*  box, type in the exact username of the user created / selected in **step 4**, above.  This is a required field.
 
@@ -156,7 +165,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
 12. There are no built-in tests within Moodle which can test the Leap web service, only a handful of Moodle's own functions. The only way to test it is to add the token to an already-configured Leap system and test to see if a user's Moodle courses are being shown.
 
-    Log in to your **Leap** installation as an administrative user.  Click on the **Admin** dropdiown menu at the top on the right, next to your name. If you cannot see this menu, you do not have administrative rights on your Leap installation.  Select **Settings**.
+    Log in to your **Leap** installation as an administrative user.  Click on the **Admin** dropdown menu at the top on the right, next to your name. If you cannot see this menu, you do not have administrative rights on your Leap installation.  Select **Settings**.
     
     Scroll down the screen until you see a section called **Old settings**. (This may change in the future as the settings aspect of Leap is improved.)  Find a field called **Moodle token** and paste into this field the token Moodle generated in step 10, above.
     
@@ -496,6 +505,11 @@ The above query should return the following data structure (data for example pur
 **Note:** The `<SINGLE>` element will appear as many times as there are assignments assigned to *USERNAME*.
 
  
+## To Do
+
+* After the 2.7 upgrade, check and test all web services thoroughly on a fresh 2.7 instance, rewriting the documentation if necessary.
+
+
 ## History
 
 * 2014-05-09, v0.3.7: fixed (more) deprecated function warnings.
