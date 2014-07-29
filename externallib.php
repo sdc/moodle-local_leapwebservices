@@ -447,4 +447,124 @@ class local_leapwebservices_external extends external_api {
         );
     }
 
-}
+
+    /*************************************************************************
+     * New for 2014:                                                         *
+     *                                                                       *
+     * GET TARGETS BY USERNAME                                               *
+     *************************************************************************/
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_targets_by_username_parameters() {
+        return new external_function_parameters(
+            array(
+                'username' => new external_value( PARAM_TEXT, 'Username. If empty, fail.' ),
+            )
+        );
+    }
+
+    /**
+     * Get user information
+     *
+     * @param array $username array of user ids
+     * @return array An array of arrays describing users
+     */
+    public static function get_targets_by_username( $username ) {
+        global $CFG, $DB;
+
+        $params = self::validate_parameters( self::get_targets_by_username_parameters(), array( 'username' => $username ) );
+
+        if ( $params['username'] == '' ) {
+            header( $_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', true, 422 );
+            exit(1);
+        }
+
+        // Get the Moodle userid for the user with the supplied username.
+        //$user = $DB->get_record( 'user', array( 'username' => $params['username'] ) );
+
+        $cores = array(
+            'core'      => 'leapcore_core',
+            'english'   => 'leapcore_english',
+            'maths'     => 'leapcore_maths',
+            'ppd'       => 'leapcore_ppd',
+        );
+
+        $courses = array();
+        foreach ( $cores as $core => $coresql ) {
+
+            //$courses['leapcore'][$core] = array();
+            $courses[$core]['leapcore']  = $core;
+
+            $sql = "SELECT mdl_course.id AS courseid, shortname
+                FROM mdl_user, mdl_course
+                WHERE mdl_user.username LIKE '" . $params['username'] . "%'
+                    AND mdl_course.idnumber LIKE '%|" . $coresql . "|%';";
+
+            if ( $result = $DB->get_record_sql( $sql ) ) {
+                $courses[$core]['course_name']  = $result->shortname;
+                $courses[$core]['course_id']    = $result->courseid;
+            }
+
+            $sql2 = "SELECT itemname, finalgrade
+                FROM mdl_grade_grades, mdl_grade_items, mdl_grade_categories, mdl_user, mdl_course
+                WHERE mdl_grade_grades.itemid = mdl_grade_items.id
+                    AND mdl_grade_items.categoryid = mdl_grade_categories.id
+                    AND mdl_grade_grades.userid = mdl_user.id
+                    AND mdl_user.username LIKE '" . $params['username'] . "%'
+                    AND mdl_grade_items.courseid = mdl_course.id
+                    AND mdl_course.idnumber LIKE '%|" . $coresql . "|%';";
+
+            if ( $result2 = $DB->get_records_sql( $sql2 ) ) {
+                $courses[$core]['mag']  = $result2['MAG']->finalgrade;
+                $courses[$core]['tag']  = $result2['TAG']->finalgrade;
+                $courses[$core]['l3va'] = $result2['L3VA']->finalgrade;
+            }
+
+        }
+
+        if ( !empty( $courses ) ) {
+
+/*
+            $context = context_course::instance($courses[$core]['course_id']);
+            try {
+                self::validate_context($context);
+            } catch (Exception $e) {
+                $exceptionparam             = new stdClass();
+                $exceptionparam->message    = $e->getMessage();
+                $exceptionparam->courseid   = $courseid;
+                throw new moodle_exception(
+                    get_string('errorcoursecontextnotvalid', 'webservice', $exceptionparam));
+            }
+            require_capability('moodle/grade:viewall', $context);
+*/
+
+            return $courses;
+
+        }
+
+    } // END function.
+
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function get_targets_by_username_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'leapcore'      => new external_value(PARAM_TEXT, 'The type of core course found.'),
+                    'course_name'   => new external_value(PARAM_TEXT, 'The course name.'),
+                    'course_id'     => new external_value(PARAM_INTEGER, 'The course ID number.'),
+                    'mag'           => new external_value(PARAM_FLOAT, 'Minimum Achievable Grade.'),
+                    'tag'           => new external_value(PARAM_FLOAT, 'Target Achievable Grade.'),
+                    'l3va'          => new external_value(PARAM_FLOAT, 'Level 3 Value Added.'),
+                )
+            )
+        );
+    }
+
+
+} // END class.
