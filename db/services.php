@@ -67,7 +67,8 @@ $functions = array(
         'classpath'     => 'local/leapwebservices/externallib.php',
         'description'   => 'Get L3VA, MAG and TAG for a specific username for all core courses.',
         'type'          => 'read',
-        'capabilities'  => 'moodle/user:viewdetails,moodle/user:viewalldetails,moodle/course:view,moodle/grade:view,moodle/grade:viewall',
+        //'capabilities'  => 'moodle/user:viewdetails,moodle/user:viewalldetails,moodle/course:view,moodle/grade:view,moodle/grade:viewall',
+        'capabilities'  => 'moodle/course:view,moodle/grade:viewall',
     ),
 );
 
