@@ -449,12 +449,6 @@ class local_leapwebservices_external extends external_api {
     }
 
 
-    /*************************************************************************
-     * New for 2014:                                                         *
-     *                                                                       *
-     * GET TARGETS BY USERNAME                                               *
-     *************************************************************************/
-
     /**
      * Returns description of method parameters
      * @return external_function_parameters
@@ -465,18 +459,17 @@ class local_leapwebservices_external extends external_api {
                 'username' => new external_value( PARAM_TEXT, 'Username. If empty, fail.' ),
             )
         );
-    }
+    } // END function.
+
 
     /**
      * Get user information
      *
-     * @param array $username array of user ids
-     * @return array An array of arrays describing users
+     * @param int $username 8-digit user ids
+     * @return array An array describing targets (and metadata) for that user for all leapcore_* courses.
      */
     public static function get_targets_by_username( $username ) {
         global $CFG, $DB;
-        require_once( $CFG->dirroot . "/grade/lib.php" );
-        require_once( $CFG->dirroot . "/grade/querylib.php" );
 
         $params = self::validate_parameters( self::get_targets_by_username_parameters(), array( 'username' => $username ) );
 
@@ -499,10 +492,13 @@ class local_leapwebservices_external extends external_api {
             'ppd'       => 'leapcore_ppd',
         );
 
+        // Define the target's names.
+        $targets = array( 'TAG', 'L3VA', 'MAG' );
+
         $courses = array();
         foreach ( $cores as $core => $coresql ) {
 
-            $courses[$core]['leapcore']     = $core;
+            $courses[$core]['leapcore'] = $core;
 
             // Checking for user enrolled as student role.
             $sql = "SELECT DISTINCT c.id AS courseid, c.shortname AS shortname, c.fullname AS fullname, username
@@ -536,64 +532,41 @@ class local_leapwebservices_external extends external_api {
                 $courses[$core]['course_id']        = $result->courseid;
             }
 
-            $sql2 = "SELECT itemname, finalgrade
-                FROM mdl_grade_grades, mdl_grade_items, mdl_grade_categories, mdl_user, mdl_course
-                WHERE mdl_grade_grades.itemid = mdl_grade_items.id
-                    AND mdl_grade_items.categoryid = mdl_grade_categories.id
-                    AND mdl_grade_grades.userid = mdl_user.id
-                    AND mdl_user.username LIKE '" . $params['username'] . "%'
-                    AND mdl_grade_items.courseid = mdl_course.id
-                    AND mdl_course.idnumber LIKE '%|" . $coresql . "|%';";
+            // Walk through a fair few objects to get the course's time modified, final grade and named grade.
+            $gi         = new grade_item();
+            $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'course' ) );
+            $courses[$core]['course_total_modified'] = $gi_item->timemodified;
 
-            if ( $result2 = $DB->get_records_sql( $sql2 ) ) {
-                $courses[$core]['mag']          = $result2['MAG']->finalgrade;
-                $courses[$core]['tag']          = $result2['TAG']->finalgrade;
-                $courses[$core]['l3va']         = $result2['L3VA']->finalgrade;
-                // Placeholders, for now:
-                $courses[$core]['mag_display']  = 'Merit';
-                $courses[$core]['tag_display']  = 'Distinction';
-                $courses[$core]['l3va_display'] = $result2['L3VA']->finalgrade;
-            } else {
-                $courses[$core]['mag']          = 0;
-                $courses[$core]['tag']          = 0;
-                $courses[$core]['l3va']         = 0;
-                // Placeholders, for now:
-                $courses[$core]['mag_display']  = '';
-                $courses[$core]['tag_display']  = '';
-                $courses[$core]['l3va_display'] = '';
+            $gg         = new grade_grade();
+            $gg_grade   = $gg::fetch( array( 'itemid' => $gi_item->id, 'userid' => $user->id ) );
+            $courses[$core]['course_total'] = $gg_grade->finalgrade;
+
+            $gs         = new grade_scale();
+            $gs_scale   = $gs::fetch( array( 'rawscaleid' => $gg_grade->rawscaleid ) );
+            $courses[$core]['course_total_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
+
+            // For each target, same as above.
+            foreach ( $targets as $target ) {
+
+                $gi         = new grade_item();
+                $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'manual', 'itemname' => $target ) );
+
+                $gg         = new grade_grade();
+                $gg_grade   = $gg::fetch( array( 'itemid' => $gi_item->id, 'userid' => $user->id ) );
+                $courses[$core][strtolower($target)]   = $gg_grade->finalgrade;
+
+                // Get the named result (e.g. 'merit') only for targets which are not L3VA.
+                if ( $target <> 'L3VA' ) {
+
+                    $gs         = new grade_scale();
+                    $gs_scale   = $gs::fetch( array( 'rawscaleid' => $gg_grade->rawscaleid ) );
+                    $courses[$core][strtolower($target) . '_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
+                } else {
+
+                    $courses[$core][strtolower($target) . '_display'] = $courses[$core][strtolower($target)];
+                }
+
             }
-
-            // Using a Moodle function to get the course's overall grade.
-            $course_total_display = grade_get_course_grade( $user->id, $courses[$core]['course_id'] );
-            $courses[$core]['course_total']         = $course_total_display->grade;
-            $courses[$core]['course_total_display'] = $course_total_display->str_grade;
-
-//echo '<pre>';
-//echo ( $course_total_display->grade );
-//echo ( $course_total_display->str_grade );
-//die();
-
-
-$thing = new grade_tree( $courses[$core]['course_id'] );
-$thing2 = $thing->get_item( 246 );
-echo '<pre>';
-//var_dump( $thing2 );
-
-$thing3 = new grade_item();
-$thing4 = $thing3::fetch( array( 'courseid' => 2, 'itemtype' => 'manual', 'itemname' => 'TAG' ) );
-//var_dump( $thing4 );
-
-$thing5 = new grade_grade();
-$thing6 = $thing5::fetch( array( 'itemid' => $thing4->id ) );
-//var_dump( $thing6 );
-
-$thing7 = new grade_scale();
-$thing8 = $thing7::fetch( array( 'rawscaleid' => $thing6->rawscaleid ) );
-var_dump( $thing8 );
-
-die();
-
-
 
             // Incomplete course check.
             // TODO: make this better. We scan through all four 'leapcore_' tags and get the results, but sometimes there aren't any.
@@ -604,29 +577,14 @@ die();
 
         }
 
-//var_dump($courses); die();
-
         if ( !empty( $courses ) ) {
-
-/*
-            $context = context_course::instance($courses[$core]['course_id']);
-            try {
-                self::validate_context($context);
-            } catch (Exception $e) {
-                $exceptionparam             = new stdClass();
-                $exceptionparam->message    = $e->getMessage();
-                $exceptionparam->courseid   = $courseid;
-                throw new moodle_exception(
-                    get_string('errorcoursecontextnotvalid', 'webservice', $exceptionparam));
-            }
-            require_capability('moodle/grade:viewall', $context);
-*/
 
             return $courses;
 
         }
 
     } // END function.
+
 
     /**
      * Returns description of method result value
@@ -636,22 +594,24 @@ die();
         return new external_multiple_structure(
             new external_single_structure(
                 array(
-                    'leapcore'              => new external_value(PARAM_TEXT, 'The type of core course found.'),
-                    'course_shortname'      => new external_value(PARAM_TEXT, 'The short course name.'),
-                    'course_fullname'       => new external_value(PARAM_TEXT, 'The full course name.'),
-                    'course_id'             => new external_value(PARAM_INTEGER, 'The course ID number.'),
-                    'mag'                   => new external_value(PARAM_FLOAT, 'Minimum Achievable Grade.'),
-                    'mag_display'           => new external_value(PARAM_TEXT, 'Minimum Achievable Grade (for display).'),
-                    'tag'                   => new external_value(PARAM_FLOAT, 'Target Achievable Grade.'),
-                    'tag_display'           => new external_value(PARAM_TEXT, 'Target Achievable Grade (for display).'),
-                    'l3va'                  => new external_value(PARAM_FLOAT, 'Level 3 Value Added.'),
-                    'l3va_display'          => new external_value(PARAM_TEXT, 'Level 3 Value Added (for display).'),
-                    'course_total'          => new external_value(PARAM_FLOAT, 'Course total score.'),
-                    'course_total_display'  => new external_value(PARAM_TEXT, 'Course total score (for display).'),
+                    'leapcore'              => new external_value( PARAM_TEXT,      'The type of core course found.' ),
+                    'course_shortname'      => new external_value( PARAM_TEXT,      'The short course name.' ),
+                    'course_fullname'       => new external_value( PARAM_TEXT,      'The full course name.' ),
+                    'course_id'             => new external_value( PARAM_INTEGER,   'The course ID number.' ),
+                    'mag'                   => new external_value( PARAM_FLOAT,     'Minimum Achievable Grade.' ),
+                    'mag_display'           => new external_value( PARAM_TEXT,      'Minimum Achievable Grade (for display).' ),
+                    'tag'                   => new external_value( PARAM_FLOAT,     'Target Achievable Grade.' ),
+                    'tag_display'           => new external_value( PARAM_TEXT,      'Target Achievable Grade (for display).' ),
+                    'l3va'                  => new external_value( PARAM_FLOAT,     'Level 3 Value Added.' ),
+                    'l3va_display'          => new external_value( PARAM_TEXT,      'Level 3 Value Added (for display).' ),
+                    'course_total'          => new external_value( PARAM_FLOAT,     'Course total score.' ),
+                    'course_total_display'  => new external_value( PARAM_TEXT,      'Course total score (for display).' ),
+                    'course_total_modified' => new external_value( PARAM_INTEGER,   'Course total modification timestamp.' ),
                 )
             )
         );
-    }
+
+    } // END function.
 
 
 } // END class.
