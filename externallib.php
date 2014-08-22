@@ -23,6 +23,7 @@
  */
 
 require_once($CFG->libdir.'/externallib.php');
+require_once($CFG->libdir.'/gradelib.php');
 
 /**
  * External Webservices API class
@@ -474,11 +475,20 @@ class local_leapwebservices_external extends external_api {
      */
     public static function get_targets_by_username( $username ) {
         global $CFG, $DB;
+        require_once( $CFG->dirroot . "/grade/lib.php" );
+        require_once( $CFG->dirroot . "/grade/querylib.php" );
 
         $params = self::validate_parameters( self::get_targets_by_username_parameters(), array( 'username' => $username ) );
 
         if ( $params['username'] == '' ) {
             header( $_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', true, 422 );
+            exit(1);
+        }
+
+        // Could do with knowing what this user's {user}.id is.
+        $sql = "SELECT id from {user} WHERE username LIKE ?;";
+        if ( !$user = $DB->get_record_sql( $sql, array( $params['username'] . '%' ) ) ) {
+            header( $_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] could not be matched against a valid user.)', true, 422 );
             exit(1);
         }
 
@@ -517,7 +527,10 @@ class local_leapwebservices_external extends external_api {
                     )
                     AND ue.status = 0;";
 
-            if ( $result = $DB->get_record_sql( $sql ) ) {
+            if ( !$result = $DB->get_record_sql( $sql ) ) {
+                unset($courses[$core]);
+                continue;
+            } else {
                 $courses[$core]['course_shortname'] = $result->shortname;
                 $courses[$core]['course_fullname']  = $result->fullname;
                 $courses[$core]['course_id']        = $result->courseid;
@@ -539,37 +552,48 @@ class local_leapwebservices_external extends external_api {
                 // Placeholders, for now:
                 $courses[$core]['mag_display']  = 'Merit';
                 $courses[$core]['tag_display']  = 'Distinction';
-                $courses[$core]['l3va_display'] = 'something';
+                $courses[$core]['l3va_display'] = $result2['L3VA']->finalgrade;
             } else {
                 $courses[$core]['mag']          = 0;
                 $courses[$core]['tag']          = 0;
                 $courses[$core]['l3va']         = 0;
                 // Placeholders, for now:
-                $courses[$core]['mag_display']  = 'Merit';
-                $courses[$core]['tag_display']  = 'Distinction';
-                $courses[$core]['l3va_display'] = 'something';
+                $courses[$core]['mag_display']  = '';
+                $courses[$core]['tag_display']  = '';
+                $courses[$core]['l3va_display'] = '';
             }
 
-            // Geting the course result. TESTING.
-            $sql3 = "SELECT finalgrade
-                FROM mdl_grade_grades, mdl_grade_items, mdl_user, mdl_course
-                WHERE mdl_grade_grades.itemid = mdl_grade_items.id
-                    AND mdl_grade_grades.userid = mdl_user.id
-                    AND mdl_user.username LIKE '" . $params['username'] . "%'
-                    AND mdl_grade_items.courseid = mdl_course.id
-                    AND mdl_course.idnumber LIKE '%|" . $coresql . "|%'
-                    AND mdl_grade_items.itemtype = 'course';";
+            // Using a Moodle function to get the course's overall grade.
+            $course_total_display = grade_get_course_grade( $user->id, $courses[$core]['course_id'] );
+            $courses[$core]['course_total']         = $course_total_display->grade;
+            $courses[$core]['course_total_display'] = $course_total_display->str_grade;
+
+//echo '<pre>';
+//echo ( $course_total_display->grade );
+//echo ( $course_total_display->str_grade );
+//die();
 
 
-            if ( $result3 = $DB->get_record_sql( $sql3 ) ) {
-                $courses[$core]['course_total']         = number_format($result3->finalgrade, 3);
-                // Placeholder, for now:
-                $courses[$core]['course_total_display'] = 'Distinction';
-            } else {
-                $courses[$core]['course_total']         = 0;
-                // Placeholder, for now:
-                $courses[$core]['course_total_display'] = 'Refer';
-            }
+$thing = new grade_tree( $courses[$core]['course_id'] );
+$thing2 = $thing->get_item( 246 );
+echo '<pre>';
+//var_dump( $thing2 );
+
+$thing3 = new grade_item();
+$thing4 = $thing3::fetch( array( 'courseid' => 2, 'itemtype' => 'manual', 'itemname' => 'TAG' ) );
+//var_dump( $thing4 );
+
+$thing5 = new grade_grade();
+$thing6 = $thing5::fetch( array( 'itemid' => $thing4->id ) );
+//var_dump( $thing6 );
+
+$thing7 = new grade_scale();
+$thing8 = $thing7::fetch( array( 'rawscaleid' => $thing6->rawscaleid ) );
+var_dump( $thing8 );
+
+die();
+
+
 
             // Incomplete course check.
             // TODO: make this better. We scan through all four 'leapcore_' tags and get the results, but sometimes there aren't any.
@@ -617,12 +641,12 @@ class local_leapwebservices_external extends external_api {
                     'course_fullname'       => new external_value(PARAM_TEXT, 'The full course name.'),
                     'course_id'             => new external_value(PARAM_INTEGER, 'The course ID number.'),
                     'mag'                   => new external_value(PARAM_FLOAT, 'Minimum Achievable Grade.'),
-                    'tag'                   => new external_value(PARAM_FLOAT, 'Target Achievable Grade.'),
-                    'l3va'                  => new external_value(PARAM_FLOAT, 'Level 3 Value Added.'),
-                    'course_total'          => new external_value(PARAM_FLOAT, 'Course total score.'),
                     'mag_display'           => new external_value(PARAM_TEXT, 'Minimum Achievable Grade (for display).'),
+                    'tag'                   => new external_value(PARAM_FLOAT, 'Target Achievable Grade.'),
                     'tag_display'           => new external_value(PARAM_TEXT, 'Target Achievable Grade (for display).'),
+                    'l3va'                  => new external_value(PARAM_FLOAT, 'Level 3 Value Added.'),
                     'l3va_display'          => new external_value(PARAM_TEXT, 'Level 3 Value Added (for display).'),
+                    'course_total'          => new external_value(PARAM_FLOAT, 'Course total score.'),
                     'course_total_display'  => new external_value(PARAM_TEXT, 'Course total score (for display).'),
                 )
             )
