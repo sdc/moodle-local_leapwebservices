@@ -486,10 +486,35 @@ class local_leapwebservices_external extends external_api {
         }
 
         $cores = array(
-            'core'      => 'leapcore_core',
-            'english'   => 'leapcore_english',
-            'maths'     => 'leapcore_maths',
-            'ppd'       => 'leapcore_ppd',
+            'core'              => 'leapcore_core',
+            'english'           => 'leapcore_english',
+            'maths'             => 'leapcore_maths',
+            'ppd'               => 'leapcore_ppd',
+            'test'              => 'leapcore_test',
+
+            /*'a2_artdes'         => 'leapcore_a2_artdes',
+            'a2_artdesphoto'    => 'leapcore_a2_artdesphoto',
+            'a2_artdestext'     => 'leapcore_a2_artdestext',
+            'a2_biology'        => 'leapcore_a2_biology',
+            'a2_busstud'        => 'leapcore_a2_busstud',
+            'a2_chemistry'      => 'leapcore_a2_chemistry',
+            'a2_englishlang'    => 'leapcore_a2_englishlang',
+            'a2_englishlit'     => 'leapcore_a2_englishlit',
+            'a2_envsci'         => 'leapcore_a2_envsci',
+            'a2_envstud'        => 'leapcore_a2_envstud',
+            'a2_filmstud'       => 'leapcore_a2_filmstud',
+            'a2_geography'      => 'leapcore_a2_geography',
+            'a2_history'        => 'leapcore_a2_history',
+            'a2_law'            => 'leapcore_a2_law',
+            'a2_maths'          => 'leapcore_a2_maths',
+            'a2_mathsfurther'   => 'leapcore_a2_mathsfurther',
+            'a2_media'          => 'leapcore_a2_media',
+            'a2_philosophy'     => 'leapcore_a2_philosophy',
+            'a2_physics'        => 'leapcore_a2_physics',*/
+            'a2_psychology'     => 'leapcore_a2_psychology',/*
+            'a2_sociology'      => 'leapcore_a2_sociology',
+            'btecex_applsci'    => 'leapcore_btecex_applsci',*/
+
         );
 
         // Define the target's names.
@@ -523,6 +548,8 @@ class local_leapwebservices_external extends external_api {
                     )
                     AND ue.status = 0;";
 
+            // There is potential here for a user to have more than one 'leapcore_core' course, but it's pretty unlikely.
+            // We probably need to handle this better (at the moment the below function expects 0 or 1 results and fails).
             if ( !$result = $DB->get_record_sql( $sql ) ) {
                 unset($courses[$core]);
                 continue;
@@ -537,14 +564,31 @@ class local_leapwebservices_external extends external_api {
             $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'course' ) );
             $courses[$core]['course_total_modified'] = $gi_item->timemodified;
 
+//echo '<pre>'; var_dump($gi_item); echo '</pre>';
+//die('poop');
+
             $gg         = new grade_grade();
             $gg_grade   = $gg::fetch( array( 'itemid' => $gi_item->id, 'userid' => $user->id ) );
             $courses[$core]['course_total'] = $gg_grade->finalgrade;
 
+echo '<pre>'; var_dump($gg_grade); echo '</pre>';
+die('poop');
+
+            if ( empty( $gg_grade->rawscaleid ) ) {
+                echo '<pre> rawscaleid: '; var_dump($gg_grade->rawscaleid); echo '</pre>';
+                //die('poop2');
+
+                // test use of the a level scale id.
+                $gg_grade->rawscaleid = 5;
+
+                echo '<pre> rawscaleid: '; var_dump($gg_grade->rawscaleid); echo '</pre>';
+            }
+            
+
             $gs         = new grade_scale();
             $gs_scale   = $gs::fetch( array( 'rawscaleid' => $gg_grade->rawscaleid ) );
             $courses[$core]['course_total_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
-
+die('poop');
             // For each target, same as above.
             foreach ( $targets as $target ) {
 
@@ -578,6 +622,7 @@ class local_leapwebservices_external extends external_api {
         }
 
         if ( !empty( $courses ) ) {
+
 
             return $courses;
 
