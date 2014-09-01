@@ -492,7 +492,7 @@ class local_leapwebservices_external extends external_api {
             'ppd'               => 'leapcore_ppd',
             'test'              => 'leapcore_test',
 
-            /*'a2_artdes'         => 'leapcore_a2_artdes',
+            'a2_artdes'         => 'leapcore_a2_artdes',
             'a2_artdesphoto'    => 'leapcore_a2_artdesphoto',
             'a2_artdestext'     => 'leapcore_a2_artdestext',
             'a2_biology'        => 'leapcore_a2_biology',
@@ -510,10 +510,10 @@ class local_leapwebservices_external extends external_api {
             'a2_mathsfurther'   => 'leapcore_a2_mathsfurther',
             'a2_media'          => 'leapcore_a2_media',
             'a2_philosophy'     => 'leapcore_a2_philosophy',
-            'a2_physics'        => 'leapcore_a2_physics',*/
-            'a2_psychology'     => 'leapcore_a2_psychology',/*
+            'a2_physics'        => 'leapcore_a2_physics',
+            'a2_psychology'     => 'leapcore_a2_psychology',
             'a2_sociology'      => 'leapcore_a2_sociology',
-            'btecex_applsci'    => 'leapcore_btecex_applsci',*/
+            'btecex_applsci'    => 'leapcore_btecex_applsci',
 
         );
 
@@ -561,34 +561,18 @@ class local_leapwebservices_external extends external_api {
 
             // Walk through a fair few objects to get the course's time modified, final grade and named grade.
             $gi         = new grade_item();
-            $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'course' ) );
+            // Pulling from the already-set MAG as the 'course' setting is unreliable.
+            $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'manual', 'itemname' => 'MAG' ) );
             $courses[$core]['course_total_modified'] = $gi_item->timemodified;
-
-//echo '<pre>'; var_dump($gi_item); echo '</pre>';
-//die('poop');
 
             $gg         = new grade_grade();
             $gg_grade   = $gg::fetch( array( 'itemid' => $gi_item->id, 'userid' => $user->id ) );
             $courses[$core]['course_total'] = $gg_grade->finalgrade;
 
-echo '<pre>'; var_dump($gg_grade); echo '</pre>';
-die('poop');
-
-            if ( empty( $gg_grade->rawscaleid ) ) {
-                echo '<pre> rawscaleid: '; var_dump($gg_grade->rawscaleid); echo '</pre>';
-                //die('poop2');
-
-                // test use of the a level scale id.
-                $gg_grade->rawscaleid = 5;
-
-                echo '<pre> rawscaleid: '; var_dump($gg_grade->rawscaleid); echo '</pre>';
-            }
-            
-
             $gs         = new grade_scale();
-            $gs_scale   = $gs::fetch( array( 'rawscaleid' => $gg_grade->rawscaleid ) );
+            $gs_scale   = $gs::fetch( array( 'id' => $gi_item->scaleid ) );
             $courses[$core]['course_total_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
-die('poop');
+
             // For each target, same as above.
             foreach ( $targets as $target ) {
 
@@ -603,7 +587,8 @@ die('poop');
                 if ( $target <> 'L3VA' ) {
 
                     $gs         = new grade_scale();
-                    $gs_scale   = $gs::fetch( array( 'rawscaleid' => $gg_grade->rawscaleid ) );
+                    $gs_scale   = $gs::fetch( array( 'id' => $gi_item->scaleid ) );
+
                     $courses[$core][strtolower($target) . '_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
                 } else {
 
@@ -613,16 +598,15 @@ die('poop');
             }
 
             // Incomplete course check.
-            // TODO: make this better. We scan through all four 'leapcore_' tags and get the results, but sometimes there aren't any.
-            // So for the tags with no associated courses, we remove them.
+            // TODO: make this better. We scan through all four 'leapcore_' tags (and all the new A2 ones) and get the results, 
+            // but sometimes there aren't any.  So for the tags with no associated courses, we remove them.
             if ( !isset( $courses[$core]['course_shortname'] ) ) {
                 unset($courses[$core]);
             }
 
-        }
+        } // END foreach $courses.
 
         if ( !empty( $courses ) ) {
-
 
             return $courses;
 
