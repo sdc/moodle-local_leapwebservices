@@ -597,6 +597,10 @@ class local_leapwebservices_external extends external_api {
 
             }
 
+            // Stress reduction code.
+            $courses[$core]['meaning_of_life']  = '42';
+            $courses[$core]['smiley_face']      = ':)';
+
             // Incomplete course check.
             // TODO: make this better. We scan through all four 'leapcore_' tags (and all the new A2 ones) and get the results, 
             // but sometimes there aren't any.  So for the tags with no associated courses, we remove them.
@@ -623,19 +627,21 @@ class local_leapwebservices_external extends external_api {
         return new external_multiple_structure(
             new external_single_structure(
                 array(
-                    'leapcore'              => new external_value( PARAM_TEXT,      'The type of core course found.' ),
-                    'course_shortname'      => new external_value( PARAM_TEXT,      'The short course name.' ),
-                    'course_fullname'       => new external_value( PARAM_TEXT,      'The full course name.' ),
-                    'course_id'             => new external_value( PARAM_INTEGER,   'The course ID number.' ),
-                    'mag'                   => new external_value( PARAM_FLOAT,     'Minimum Achievable Grade.' ),
-                    'mag_display'           => new external_value( PARAM_TEXT,      'Minimum Achievable Grade (for display).' ),
-                    'tag'                   => new external_value( PARAM_FLOAT,     'Target Achievable Grade.' ),
-                    'tag_display'           => new external_value( PARAM_TEXT,      'Target Achievable Grade (for display).' ),
-                    'l3va'                  => new external_value( PARAM_FLOAT,     'Level 3 Value Added.' ),
-                    'l3va_display'          => new external_value( PARAM_TEXT,      'Level 3 Value Added (for display).' ),
-                    'course_total'          => new external_value( PARAM_FLOAT,     'Course total score.' ),
-                    'course_total_display'  => new external_value( PARAM_TEXT,      'Course total score (for display).' ),
-                    'course_total_modified' => new external_value( PARAM_INTEGER,   'Course total modification timestamp.' ),
+                    'leapcore'                  => new external_value( PARAM_TEXT,      'The type of core course found.' ),
+                    'course_shortname'          => new external_value( PARAM_TEXT,      'The short course name.' ),
+                    'course_fullname'           => new external_value( PARAM_TEXT,      'The full course name.' ),
+                    'course_id'                 => new external_value( PARAM_INTEGER,   'The course ID number.' ),
+                    'mag'                       => new external_value( PARAM_FLOAT,     'Minimum Achievable Grade.' ),
+                    'mag_display'               => new external_value( PARAM_TEXT,      'Minimum Achievable Grade (for display).' ),
+                    'tag'                       => new external_value( PARAM_FLOAT,     'Target Achievable Grade.' ),
+                    'tag_display'               => new external_value( PARAM_TEXT,      'Target Achievable Grade (for display).' ),
+                    'l3va'                      => new external_value( PARAM_FLOAT,     'Level 3 Value Added.' ),
+                    'l3va_display'              => new external_value( PARAM_TEXT,      'Level 3 Value Added (for display).' ),
+                    'course_total'              => new external_value( PARAM_FLOAT,     'Course total score.' ),
+                    'course_total_display'      => new external_value( PARAM_TEXT,      'Course total score (for display).' ),
+                    'course_total_modified'     => new external_value( PARAM_INTEGER,   'Course total modification timestamp.' ),
+                    'meaning_of_life'           => new external_value( PARAM_INTEGER,   'Meaning of life.' ),
+                    'smiley_face'               => new external_value( PARAM_TEXT,      'Smiley face.' ),
                 )
             )
         );
