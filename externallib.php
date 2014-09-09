@@ -569,9 +569,14 @@ class local_leapwebservices_external extends external_api {
             $gg_grade   = $gg::fetch( array( 'itemid' => $gi_item->id, 'userid' => $user->id ) );
             $courses[$core]['course_total'] = $gg_grade->finalgrade;
 
-            $gs         = new grade_scale();
-            $gs_scale   = $gs::fetch( array( 'id' => $gi_item->scaleid ) );
-            $courses[$core]['course_total_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
+            // If the scale is going to be a U (or Refer, or Fail etc) as the L3VA is 0, pass null.
+            if ( $gg_grade->finalgrade > 0 ) {
+                $gs         = new grade_scale();
+                $gs_scale   = $gs::fetch( array( 'id' => $gi_item->scaleid ) );
+                $courses[$core]['course_total_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
+            } else {
+                $courses[$core]['course_total_display'] = null;
+            }
 
             // For each target, same as above.
             foreach ( $targets as $target ) {
@@ -589,7 +594,13 @@ class local_leapwebservices_external extends external_api {
                     $gs         = new grade_scale();
                     $gs_scale   = $gs::fetch( array( 'id' => $gi_item->scaleid ) );
 
-                    $courses[$core][strtolower($target) . '_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
+                    // If the scale is going to be a U (or Refer, or Fail etc) as the L3VA is 0, pass null.
+                    if ( $gg_grade->finalgrade > 0 ) {
+                        $courses[$core][strtolower($target) . '_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
+                    } else {
+                        $courses[$core][strtolower($target) . '_display'] = null;
+                    }
+
                 } else {
 
                     $courses[$core][strtolower($target) . '_display'] = $courses[$core][strtolower($target)];
