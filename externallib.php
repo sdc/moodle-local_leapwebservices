@@ -504,7 +504,9 @@ class local_leapwebservices_external extends external_api {
             'a2_envstud'        => 'leapcore_a2_envstud',
             'a2_filmstud'       => 'leapcore_a2_filmstud',
             'a2_geography'      => 'leapcore_a2_geography',
+            'a2_govpoli'        => 'leapcore_a2_govpoli',
             'a2_history'        => 'leapcore_a2_history',
+            'a2_humanbiology'   => 'leapcore_a2_humanbiology',
             'a2_law'            => 'leapcore_a2_law',
             'a2_maths'          => 'leapcore_a2_maths',
             'a2_mathsfurther'   => 'leapcore_a2_mathsfurther',
@@ -525,11 +527,12 @@ class local_leapwebservices_external extends external_api {
 
             $courses[$core]['leapcore'] = $core;
 
-            // Checking for user enrolled as student role.
+            // Checking for user enrolled as student role, manual enrolments only.
             $sql = "SELECT DISTINCT c.id AS courseid, c.shortname AS shortname, c.fullname AS fullname, username
                 FROM mdl_user u
                     JOIN mdl_user_enrolments ue ON ue.userid = u.id
                     JOIN mdl_enrol e ON e.id = ue.enrolid
+                        AND e.enrol = 'manual'
                     JOIN mdl_role_assignments ra ON ra.userid = u.id
                     JOIN mdl_context ct ON ct.id = ra.contextid
                         AND ct.contextlevel = 50
@@ -561,8 +564,8 @@ class local_leapwebservices_external extends external_api {
 
             // Walk through a fair few objects to get the course's time modified, final grade and named grade.
             $gi         = new grade_item();
-            // Pulling from the already-set MAG as the 'course' setting is unreliable.
-            $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'manual', 'itemname' => 'MAG' ) );
+            // The course item is actually the right one to use, even if it is null.
+            $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'manual', 'itemname' => 'course' ) );
             $courses[$core]['course_total_modified'] = $gi_item->timemodified;
 
             $gg         = new grade_grade();
