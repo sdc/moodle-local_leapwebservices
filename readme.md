@@ -512,7 +512,7 @@ The above query should return the following data structure (data for example pur
 
 ## History
 
-* 2014-09-09, v0.4.2: Targets: added government/politics and human biology; selects only manual student enrolments; revert use of MAG instead of course grade item. 
+* 2014-09-16, v0.4.2: Targets: added government/politics and human biology; selects only manual student enrolments; revert use of MAG instead of course grade item. 
 * 2014-09-09, v0.4.1: new service modified to send null instead of a failing grade if the score is null.
 * 2014-07-29, v0.4.0: added new service 'get_targets_by_username' to allow Leap to query Moodle for L3VM, MAG and TAG scores.
 * 2014-05-09, v0.3.7: fixed (more) deprecated function warnings.
