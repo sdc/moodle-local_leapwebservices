@@ -63,7 +63,7 @@ Before installation, please check you have the following files and structure:
 
 ## Configuration
 
-(**Note:** This guide has been written using Moodle 2.5. If you are using a different version of Moodle, your mileage may vary.)
+(**Note:** This guide has been written using Moodle 2.5, and added to over time using Moodles 2.6 and 2.7. If you are using a different version of Moodle, your mileage may vary.)
 
 This plugin has no configuration itself, however your Moodle installation will require configuration to correctly use web services. 
 
@@ -116,6 +116,11 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     **Gradebook**
     * moodle/grade:viewall (View all grades)
+
+    **Badges**
+    * moodle/badges:viewbadges (View available badges without earning them)
+    * moodle/badges:viewawarded (View users who earned a specific badge without being able to award a badge)
+    * moodle/badges:viewotherbadges (View public badges in other users' profiles)
 
     (**Note:** the best way is to use your web browser's search feature and search for the text exactly as it appears: it will get you to the exact capability or very close.)
 
@@ -504,7 +509,155 @@ The above query should return the following data structure (data for example pur
 
 **Note:** The `<SINGLE>` element will appear as many times as there are assignments assigned to *USERNAME*.
 
- 
+
+### `get_targets_by_username`
+
+* Pass: a user's username.
+* Returns: targets (MAG, TAG, L3VA) for each 'tagged' course the user is *manually* enrolled on:
+    * leapcore - the type of core course found, as tagged manually
+    * course_shortname - the short course name
+    * course_fullname - the full course name
+    * course_id - the course ID number
+    * mag - Minimum Achievable Grade
+    * mag_display - Minimum Achievable Grade (for display)
+    * tag - Target Achievable Grade
+    * tag_display - Target Achievable Grade (for display)
+    * l3va - Level 3 Value Added
+    * l3va_display - Level 3 Value Added (for display)
+    * course_total - course total score
+    * course_total_display - course total score (for display)
+    * course_total_modified - course total modification timestamp
+
+Use a URL with the following format:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_targets_by_username&username=USERNAME`
+
+...where *YOURTOKEN* is the token created within Moodle, and *USERNAME* is a user's username, e.g.:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_targets_by_username&username=paulvaughan`
+
+The above query should return the following data structure (data for example purposes only):
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <RESPONSE>
+      <MULTIPLE>
+        <SINGLE>
+          <KEY name="leapcore">
+            <VALUE>core</VALUE>
+          </KEY>
+          <KEY name="course_shortname">
+            <VALUE>TC001</VALUE>
+          </KEY>
+          <KEY name="course_fullname">
+            <VALUE>Test Course 001</VALUE>
+          </KEY>
+          <KEY name="course_id">
+            <VALUE>2</VALUE>
+          </KEY>
+          <KEY name="mag">
+            <VALUE>3</VALUE>
+          </KEY>
+          <KEY name="mag_display">
+            <VALUE>Merit</VALUE>
+          </KEY>
+          <KEY name="tag">
+            <VALUE>4</VALUE>
+          </KEY>
+          <KEY name="tag_display">
+            <VALUE>Distinction</VALUE>
+          </KEY>
+          <KEY name="l3va">
+            <VALUE>56.789</VALUE>
+          </KEY>
+          <KEY name="l3va_display">
+            <VALUE>56.78900</VALUE>
+          </KEY>
+          <KEY name="course_total">
+            <VALUE>4</VALUE>
+          </KEY>
+          <KEY name="course_total_display">
+            <VALUE>Distinction</VALUE>
+          </KEY>
+          <KEY name="course_total_modified">
+            <VALUE>1410555555</VALUE>
+          </KEY>
+        </SINGLE>
+      </MULTIPLE>
+    </RESPONSE>
+
+**Note:** The `<SINGLE>` element will appear as many times as there are courses manually tagged with `leapcore_*`.
+
+
+### `get_badges_by_username`
+
+* Pass: a user's username.
+* Returns: any badges the user has been issued.
+    * course_id - Moodle ID of the course the badge is assigned to
+    * date_issued - timestamp in Unix epoch format
+    * description - badge description
+    * details_link - full URL to the badge details page on Moodle
+    * image_url - full URL to the image
+    * name - badge name
+
+Use a URL with the following format:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=YOURTOKEN&wsfunction=local_leapwebservices_get_badges_by_username&username=USERNAME`
+
+...where *YOURTOKEN* is the token created within Moodle, and *USERNAME* is a user's username, e.g.:
+
+`http://yourmoodle.com/webservice/rest/server.php?wstoken=a180245560982a0e48e43577238c0198&wsfunction=local_leapwebservices_get_badges_by_username&username=paulvaughan`
+
+The above query should return the following data structure (data for example purposes only):
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <RESPONSE>
+      <MULTIPLE>
+        <SINGLE>
+          <KEY name="course_id">
+            <VALUE>2</VALUE>
+          </KEY>
+          <KEY name="date_issued">
+            <VALUE>1410555555</VALUE>
+          </KEY>
+          <KEY name="description">
+            <VALUE>You've successfully logged in to Moodle!</VALUE>
+          </KEY>
+          <KEY name="image_url">
+            <VALUE>http://yourmoodle.com/pluginfile.php/5/badges/userbadge/3/82f5ae9338cd8e8738cb1f44216a2a7b655ce1cc?forcedownload=1</VALUE>
+          </KEY>
+          <KEY name="details_link">
+            <VALUE>http://yourmoodle.com/badges/badge.php?hash=82f5ae9338cd8e8738cb1f44216a2a7b655ce1cc</VALUE>
+          </KEY>
+          <KEY name="name">
+            <VALUE>Achievement Get: Logging In</VALUE>
+          </KEY>
+        </SINGLE>
+        <SINGLE>
+          <KEY name="course_id">
+            <VALUE>3</VALUE>
+          </KEY>
+          <KEY name="date_issued">
+            <VALUE>1410555556</VALUE>
+          </KEY>
+          <KEY name="description">
+            <VALUE>You've been blown up by a Creeper ten times!</VALUE>
+          </KEY>
+          <KEY name="image_url">
+            <VALUE>http://yourmoodle.com/pluginfile.php/5/badges/userbadge/2/ba39f99bcff91246a51f0f7af7f8560db989f1a8?forcedownload=1</VALUE>
+          </KEY>
+          <KEY name="details_link">
+            <VALUE>http://yourmoodle.com/badges/badge.php?hash=ba39f99bcff91246a51f0f7af7f8560db989f1a8</VALUE>
+          </KEY>
+          <KEY name="name">
+            <VALUE>Creeperlicious</VALUE>
+          </KEY>
+        </SINGLE>
+      </MULTIPLE>
+    </RESPONSE>
+
+**Note:** The `<SINGLE>` element will appear as many times as there are badges issued to *USERNAME*.
+
+
 ## To Do
 
 * After the 2.7 upgrade, check and test all web services thoroughly on a fresh 2.7 instance, rewriting the documentation if necessary.
@@ -512,6 +665,7 @@ The above query should return the following data structure (data for example pur
 
 ## History
 
+* 2014-09-17, v0.5.0: Added a new webservice to retrieve any badges which have been issued to a user.
 * 2014-09-16, v0.4.2: Targets: added government/politics and human biology; selects only manual student enrolments; revert use of MAG instead of course grade item. 
 * 2014-09-09, v0.4.1: new service modified to send null instead of a failing grade if the score is null.
 * 2014-07-29, v0.4.0: added new service 'get_targets_by_username' to allow Leap to query Moodle for L3VM, MAG and TAG scores.
