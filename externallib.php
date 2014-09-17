@@ -705,12 +705,9 @@ class local_leapwebservices_external extends external_api {
 
         $output = array();
         if ( !$userbadges ) {
-            $output[0]['course_id']    = null;
-            $output[0]['date_issued']  = null;
-            $output[0]['description']  = null;
-            $output[0]['details_link'] = null;
-            $output[0]['image_url']    = null;
-            $output[0]['name']         = null;
+
+            return $output;
+
         } else {
             $output = array();
             $count = 0;
