@@ -465,7 +465,7 @@ class local_leapwebservices_external extends external_api {
     /**
      * Get user information
      *
-     * @param int $username 8-digit user ids
+     * @param string $username EBS username, could be 8-digit int or string.
      * @return array An array describing targets (and metadata) for that user for all leapcore_* courses.
      */
     public static function get_targets_by_username( $username ) {
@@ -656,6 +656,97 @@ class local_leapwebservices_external extends external_api {
                     'course_total_modified'     => new external_value( PARAM_INTEGER,   'Course total modification timestamp.' ),
                     'meaning_of_life'           => new external_value( PARAM_INTEGER,   'Meaning of life.' ),
                     'smiley_face'               => new external_value( PARAM_TEXT,      'Smiley face.' ),
+                )
+            )
+        );
+
+    } // END function.
+
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_badges_by_username_parameters() {
+        return new external_function_parameters(
+            array(
+                'username' => new external_value( PARAM_TEXT, 'Username. If empty, fail.' ),
+            )
+        );
+    } // END function.
+
+    /**
+     * Get user information
+     *
+     * @param string $username EBS username, could be 8-digit int or string.
+     * @return array An array describing targets (and metadata) for that user for all leapcore_* courses.
+     */
+    public static function get_badges_by_username( $username ) {
+        global $CFG, $DB;
+
+        $params = self::validate_parameters( self::get_badges_by_username_parameters(), array( 'username' => $username ) );
+
+        if ( $params['username'] == '' ) {
+            header( $_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', true, 422 );
+            exit(1);
+        }
+
+        // Could do with knowing what this user's {user}.id is.
+        $sql = "SELECT id from {user} WHERE username LIKE ?;";
+        if ( !$user = $DB->get_record_sql( $sql, array( $params['username'] . '%' ) ) ) {
+            header( $_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] could not be matched against a valid user.)', true, 422 );
+            exit(1);
+        }
+
+        require_once($CFG->libdir . '/badgeslib.php');
+
+        // Get the user's badges.
+        $userbadges = badges_get_user_badges( $user->id );
+
+        $output = array();
+        if ( !$userbadges ) {
+            $output[0]['course_id']    = null;
+            $output[0]['date_issued']  = null;
+            $output[0]['description']  = null;
+            $output[0]['details_link'] = null;
+            $output[0]['image_url']    = null;
+            $output[0]['name']         = null;
+        } else {
+            $output = array();
+            $count = 0;
+            foreach ( $userbadges as $hash => $ubadge ) {
+                $count++;
+
+                $output[$count]['course_id']    = $ubadge->courseid;
+                $output[$count]['date_issued']  = $ubadge->dateissued;
+                $output[$count]['description']  = $ubadge->description;
+                $output[$count]['details_link'] = (string) new moodle_url('/badges/badge.php', array( 'hash' => $hash ));
+                $output[$count]['image_url']    = (string) badges_bake( $hash, $ubadge->id );
+                $output[$count]['name']         = $ubadge->name;
+
+            }
+
+        }
+
+        return $output;
+
+    } // END function.
+
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function get_badges_by_username_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'course_id'     => new external_value( PARAM_INT,   'Moodle ID of the course the badge is assigned to.' ),
+                    'date_issued'   => new external_value( PARAM_INT,   'Timestamp in Unix epoch format.' ),
+                    'description'   => new external_value( PARAM_TEXT,  'Badge description.' ),
+                    'details_link'  => new external_value( PARAM_TEXT,  'Full URL to the issued page on Moodle.' ),
+                    'image_url'     => new external_value( PARAM_TEXT,  'Full URL to the image.' ),
+                    'name'          => new external_value( PARAM_TEXT,  'Badge name.' ),
+
                 )
             )
         );
