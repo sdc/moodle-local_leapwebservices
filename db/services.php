@@ -78,6 +78,15 @@ $functions = array(
         'type'          => 'read',
         'capabilities'  => 'moodle/badges:viewotherbadges,moodle/badges:viewawarded,moodle/badges:viewbadges',
     ),
+
+    'local_leapwebservices_get_users_with_mag' => array(
+        'classname'     => 'local_leapwebservices_external',
+        'methodname'    => 'get_users_with_mag',
+        'classpath'     => 'local/leapwebservices/externallib.php',
+        'description'   => 'Get all users who have a MAG set.',
+        'type'          => 'read',
+        'capabilities'  => 'moodle/user:viewdetails,moodle/grade:viewall',
+    ),
 );
 
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.
@@ -90,6 +99,7 @@ $services = array(
             'local_leapwebservices_get_assignments_by_username',
             'local_leapwebservices_get_targets_by_username',
             'local_leapwebservices_get_badges_by_username',
+            'local_leapwebservices_get_users_with_mag',
         ),
         'restrictedusers'   => 1,
         'enabled'           => 1,

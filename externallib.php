@@ -751,4 +751,66 @@ class local_leapwebservices_external extends external_api {
     } // END function.
 
 
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_users_with_mag_parameters() {
+        return new external_function_parameters(
+            array()
+        );
+    } // END function.
+
+    /**
+     * Get user information
+     *
+     * @param string $username EBS username, could be 8-digit int or string.
+     * @return array An array describing targets (and metadata) for that user for all leapcore_* courses.
+     */
+    public static function get_users_with_mag() {
+        global $CFG, $DB;
+
+        // One query to get all the details we need.
+        $sql = "SELECT DISTINCT gg.userid, u.username
+                FROM {$CFG->prefix}grade_items gi, {$CFG->prefix}grade_grades gg, {$CFG->prefix}user u
+                WHERE gi.itemname = 'MAG'
+                    AND gi.id = gg.itemid
+                    AND gg.userid = u.id;";
+
+        if ( !$users = $DB->get_records_sql( $sql ) ) {
+            return array();
+            exit(1);
+        }
+
+        $output = array();
+        $count = 0;
+        foreach ( $users as $user ) {
+            $count++;
+
+            $output[$count]['userid'] = $user->userid;
+            $tmp = explode( '@', $user->username);
+            $output[$count]['username'] = $tmp[0];
+        }
+
+        return $output;
+
+    } // END function.
+
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function get_users_with_mag_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'userid'    => new external_value( PARAM_INT,   'Moodle ID of the user.' ),
+                    'username'  => new external_value( PARAM_TEXT,  'Username of the user.' ),
+                )
+            )
+        );
+
+    } // END function.
+
+
 } // END class.
