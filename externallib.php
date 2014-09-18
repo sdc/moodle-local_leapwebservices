@@ -532,7 +532,7 @@ class local_leapwebservices_external extends external_api {
                 FROM mdl_user u
                     JOIN mdl_user_enrolments ue ON ue.userid = u.id
                     JOIN mdl_enrol e ON e.id = ue.enrolid
-                        AND e.enrol = 'manual'
+                        -- AND e.enrol = 'manual'
                     JOIN mdl_role_assignments ra ON ra.userid = u.id
                     JOIN mdl_context ct ON ct.id = ra.contextid
                         AND ct.contextlevel = 50
