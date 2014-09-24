@@ -812,5 +812,68 @@ class local_leapwebservices_external extends external_api {
 
     } // END function.
 
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_users_with_badges_parameters() {
+        return new external_function_parameters(
+            array()
+        );
+    } // END function.
+
+    /**
+     * Get user information
+     *
+     * @return array A list of users who have been assigned badges.
+     */
+    public static function get_users_with_badges() {
+        global $CFG, $DB;
+
+        // One query to get all the details we need.
+        $sql = "SELECT DISTINCT u.id, u.username
+                FROM {$CFG->prefix}user u, {$CFG->prefix}badge_issued bi
+                WHERE u.id = bi.userid
+                    AND bi.visible = 1
+                    AND (
+                        UNIX_TIMESTAMP ( NOW() ) < bi.dateexpire
+                        OR bi.dateexpire IS NULL
+                    )
+                ORDER BY u.id ASC;";
+
+        if ( !$users = $DB->get_records_sql( $sql ) ) {
+            return array();
+            exit(1);
+        }
+
+        $output = array();
+        $count = 0;
+        foreach ( $users as $user ) {
+            $count++;
+
+            $output[$count]['userid'] = $user->id;
+            $tmp = explode( '@', $user->username);
+            $output[$count]['username'] = $tmp[0];
+        }
+
+        return $output;
+
+    } // END function.
+
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function get_users_with_badges_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'userid'    => new external_value( PARAM_INT,   'Moodle ID of the user.' ),
+                    'username'  => new external_value( PARAM_TEXT,  'Username of the user.' ),
+                )
+            )
+        );
+
+    } // END function.
 
 } // END class.
