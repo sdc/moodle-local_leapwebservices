@@ -831,14 +831,17 @@ class local_leapwebservices_external extends external_api {
         global $CFG, $DB;
 
         // One query to get all the details we need.
+        $now    = time();
+        $then   = $now - ( 60 * 60 * 24 * 365 );  // One year ago.
         $sql = "SELECT DISTINCT u.id, u.username
                 FROM {$CFG->prefix}user u, {$CFG->prefix}badge_issued bi
                 WHERE u.id = bi.userid
                     AND bi.visible = 1
                     AND (
-                        UNIX_TIMESTAMP ( NOW() ) < bi.dateexpire
+                        bi.dateexpire > {$now}
                         OR bi.dateexpire IS NULL
                     )
+                    AND bi.dateissued > {$then}
                 ORDER BY u.id ASC;";
 
         if ( !$users = $DB->get_records_sql( $sql ) ) {
