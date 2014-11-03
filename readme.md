@@ -21,6 +21,8 @@ This local Moodle plugin has it's own repository located at [github.com/sdc/mood
 
 This plugin has been written to work with South Devon College's currently-in-production version of Moodle, which at this time is 2.7, but has been working in production with 2.6 and 2.5. This plugin also works in Moodle 2.4 except the `get_users_by_username` function, which requires a function not found in Moodle 2.4 or earlier.
 
+The badges functions `get_users_with_badges` and `get_badges_by_username` should work with any version of Moodle in which badges are found (2.5 onward) but have not been tested in versions earlier then 2.7.
+
 Earlier versions (2.0 to 2.3) have not been exhaustively tested with this plugin.
 
 
