@@ -30,4 +30,4 @@ $plugin->requires   = 2010112400;
 $plugin->component  = 'local_leapwebservices';
 $plugin->cron       = 0;
 $plugin->maturity   = MATURITY_BETA;
-$plugin->release    = '0.7.1';
+$plugin->release    = '0.7.2';
