@@ -569,8 +569,8 @@ class local_leapwebservices_external extends external_api {
             // Walk through a fair few objects to get the course's time modified, final grade and named grade.
             $gi         = new grade_item();
             // The course item is actually the right one to use, even if it is null.
-            //$gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'manual', 'itemname' => 'course' ) );
             $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'course' ) );
+            // This may get changed further down the script as we want the most recently changed item's date.
             $courses[$core]['course_total_modified'] = $gi_item->timemodified;
 
             $gg         = new grade_grade();
@@ -613,6 +613,11 @@ class local_leapwebservices_external extends external_api {
 
                     $gs         = new grade_scale();
                     $gs_scale   = $gs::fetch( array( 'id' => $gi_item->scaleid ) );
+
+                    // Updating the most recently modified date if it's newer.
+                    if ( $gi_item->timemodified > $courses[$core]['course_total_modified'] ) {
+                        $courses[$core]['course_total_modified'] = $gi_item->timemodified;
+                    }
 
                     // If the scale is going to be a U (or Refer, or Fail etc) as the L3VA is 0, pass null.
                     if ( $gg_grade->finalgrade > 0 ) {
