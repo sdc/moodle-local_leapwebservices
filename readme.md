@@ -753,6 +753,7 @@ The above query should return the following data structure, which is identical t
 
 ## History
 
+* 2014-10-31, v0.7.1: Over-zealous pruning of unnecessary code removed necessary code; rounded numbers sent where no scale exists.
 * 2014-09-24, v0.7.0: Added a new webservice to retrieve all users who have been issued at least one (visible, not-expired) badge.
 * 2014-09-18, v0.6.0: Added a new webservice to retrieve all users who have a non-null, > 0 MAG grade in the gradebook, regardless of course.
 * 2014-09-17, v0.5.0: Added a new webservice to retrieve badges which have been issued to a user.
