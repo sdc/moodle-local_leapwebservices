@@ -478,6 +478,9 @@ class local_leapwebservices_external extends external_api {
             exit(1);
         }
 
+        // Require for the course completion code.
+        require_once($CFG->libdir . '/completionlib.php');
+
         // Could do with knowing what this user's {user}.id is.
         $sql = "SELECT id from {user} WHERE username LIKE ?;";
         if ( !$user = $DB->get_record_sql( $sql, array( $params['username'] . '%' ) ) ) {
@@ -643,6 +646,30 @@ class local_leapwebservices_external extends external_api {
 
             }
 
+            // Default both of these to null.
+            $courses[$core]['course_completion_total']     = null;
+            $courses[$core]['course_completion_completed'] = null;
+
+            // We could do with a course object to use.
+            $sql = "SELECT id from {course} WHERE id LIKE ?;";
+            if ( !$thiscourse = $DB->get_record_sql( $sql, array( $courses[$core]['course_id'] ) ) ) {
+                exit(1);
+            }
+
+            if ( completion_info::is_enabled_for_site() ) {
+
+                $info = new completion_info( $thiscourse );
+                $completions = $info->get_completions($user->id);
+
+                // If there's no completions, none have been configured so do nothing.
+                if ( !empty( $completions ) ) {
+
+                    $courses[$core]['course_completion_total']     = count( $completions );
+                    $courses[$core]['course_completion_completed'] = $info->count_course_user_data( $user->id );
+                }
+
+            } // END completion info enabled for site check.
+
             // Stress reduction code.
             $courses[$core]['meaning_of_life']  = '42';
             $courses[$core]['smiley_face']      = ':)';
@@ -673,21 +700,23 @@ class local_leapwebservices_external extends external_api {
         return new external_multiple_structure(
             new external_single_structure(
                 array(
-                    'leapcore'                  => new external_value( PARAM_TEXT,      'The type of core course found.' ),
-                    'course_shortname'          => new external_value( PARAM_TEXT,      'The short course name.' ),
-                    'course_fullname'           => new external_value( PARAM_TEXT,      'The full course name.' ),
-                    'course_id'                 => new external_value( PARAM_INTEGER,   'The course ID number.' ),
-                    'mag'                       => new external_value( PARAM_FLOAT,     'Minimum Achievable Grade.' ),
-                    'mag_display'               => new external_value( PARAM_TEXT,      'Minimum Achievable Grade (for display).' ),
-                    'tag'                       => new external_value( PARAM_FLOAT,     'Target Achievable Grade.' ),
-                    'tag_display'               => new external_value( PARAM_TEXT,      'Target Achievable Grade (for display).' ),
-                    'l3va'                      => new external_value( PARAM_FLOAT,     'Level 3 Value Added.' ),
-                    'l3va_display'              => new external_value( PARAM_TEXT,      'Level 3 Value Added (for display).' ),
-                    'course_total'              => new external_value( PARAM_FLOAT,     'Course total score.' ),
-                    'course_total_display'      => new external_value( PARAM_TEXT,      'Course total score (for display).' ),
-                    'course_total_modified'     => new external_value( PARAM_INTEGER,   'Course total modification timestamp.' ),
-                    'meaning_of_life'           => new external_value( PARAM_INTEGER,   'Meaning of life.' ),
-                    'smiley_face'               => new external_value( PARAM_TEXT,      'Smiley face.' ),
+                    'leapcore'                      => new external_value( PARAM_TEXT,      'The type of core course found.' ),
+                    'course_shortname'              => new external_value( PARAM_TEXT,      'The short course name.' ),
+                    'course_fullname'               => new external_value( PARAM_TEXT,      'The full course name.' ),
+                    'course_id'                     => new external_value( PARAM_INTEGER,   'The course ID number.' ),
+                    'mag'                           => new external_value( PARAM_FLOAT,     'Minimum Achievable Grade.' ),
+                    'mag_display'                   => new external_value( PARAM_TEXT,      'Minimum Achievable Grade (for display).' ),
+                    'tag'                           => new external_value( PARAM_FLOAT,     'Target Achievable Grade.' ),
+                    'tag_display'                   => new external_value( PARAM_TEXT,      'Target Achievable Grade (for display).' ),
+                    'l3va'                          => new external_value( PARAM_FLOAT,     'Level 3 Value Added.' ),
+                    'l3va_display'                  => new external_value( PARAM_TEXT,      'Level 3 Value Added (for display).' ),
+                    'course_total'                  => new external_value( PARAM_FLOAT,     'Course total score.' ),
+                    'course_total_display'          => new external_value( PARAM_TEXT,      'Course total score (for display).' ),
+                    'course_total_modified'         => new external_value( PARAM_INTEGER,   'Course total modification timestamp.' ),
+                    'course_completion_total'       => new external_value( PARAM_INTEGER,   'Course completion total.' ),
+                    'course_completion_completed'   => new external_value( PARAM_INTEGER,   'Course completion complete.' ),
+                    'meaning_of_life'               => new external_value( PARAM_INTEGER,   'Meaning of life.' ),
+                    'smiley_face'                   => new external_value( PARAM_TEXT,      'Smiley face.' ),
                 )
             )
         );

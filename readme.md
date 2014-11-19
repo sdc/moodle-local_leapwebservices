@@ -529,6 +529,8 @@ The above query should return the following data structure (data for example pur
     * course_total - course total score
     * course_total_display - course total score (for display)
     * course_total_modified - course total modification timestamp
+    * course_completion_total - the total number of configured course completion criteria
+    * course_completion_completed - the completed number of configured course completion criteria
 
 Use a URL with the following format:
 
@@ -582,6 +584,12 @@ The above query should return the following data structure (data for example pur
           </KEY>
           <KEY name="course_total_modified">
             <VALUE>1410555555</VALUE>
+          </KEY>
+          <KEY name="course_completion_total">
+            <VALUE>2</VALUE>
+          </KEY>
+          <KEY name="course_completion_completed">
+            <VALUE>1</VALUE>
           </KEY>
         </SINGLE>
       </MULTIPLE>
@@ -755,6 +763,7 @@ The above query should return the following data structure, which is identical t
 
 ## History
 
+* 2014-11-19, v0.8.0: Added course completion details (total/complete) to get_targets_by_username webservice.
 * 2014-11-03, v0.7.2: The course's last update time will be that of the most recently updated item, not just that of the course.
 * 2014-11-03, v0.7.1: Over-zealous pruning of unnecessary code removed necessary code; rounded numbers sent where no scale exists.
 * 2014-09-24, v0.7.0: Added a new webservice to retrieve all users who have been issued at least one (visible, not-expired) badge.
