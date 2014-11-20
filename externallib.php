@@ -666,6 +666,13 @@ class local_leapwebservices_external extends external_api {
 
                     $courses[$core]['course_completion_total']     = count( $completions );
                     $courses[$core]['course_completion_completed'] = $info->count_course_user_data( $user->id );
+
+                    // Loop through each timecompleted value, ignore if null, update if more recent.
+                    foreach ($completions as $completion) {
+                        if ( !is_null( $completion->timecompleted ) && $completion->timecompleted > $courses[$core]['course_total_modified'] ) {
+                            $courses[$core]['course_total_modified'] = $completion->timecompleted;
+                        }
+                    }
                 }
 
             } // END completion info enabled for site check.
