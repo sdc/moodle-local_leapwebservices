@@ -763,6 +763,7 @@ The above query should return the following data structure, which is identical t
 
 ## History
 
+* 2014-11-24, v0.8.2: Look for a non-zero 'display' variable for a course and if found, use that to format the output.
 * 2014-11-20, v0.8.1: If a course completion has happened, check it's time against the course's timemodified and if newer, update.
 * 2014-11-19, v0.8.0: Added course completion details (total/complete) to get_targets_by_username webservice.
 * 2014-11-03, v0.7.2: The course's last update time will be that of the most recently updated item, not just that of the course.

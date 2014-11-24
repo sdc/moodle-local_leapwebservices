@@ -585,7 +585,11 @@ class local_leapwebservices_external extends external_api {
 
                 $gs         = new grade_scale();
                 $gs_scale   = $gs::fetch( array( 'id' => $gi_item->scaleid ) );
-                if ( $gs_scale ) {
+                if ( $gi_item->display != 0 ) {
+                    // Check first for a non-zero 'display' variable, and run with that if found.
+                    $courses[$core]['course_total_display'] = grade_format_gradevalue( $gg_grade->finalgrade, $gi_item, true, $gi_item->display );
+                } else if ( $gs_scale ) {
+                    // See if we have a scale and use that if found.
                     $courses[$core]['course_total_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
                 } else {
                     if ( is_numeric( $gg_grade->finalgrade ) ) {
