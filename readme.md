@@ -69,7 +69,7 @@ Before installation, please check you have the following files and structure:
 
 ## Configuration
 
-(**Note:** This guide has been written using Moodle 2.5, and added to over time using Moodles 2.6 and 2.7. If you are using a different version of Moodle, your mileage may vary.)
+(**Note:** This guide has been written using Moodle 2.4, and added to over time using every released version of Moodle.  It has been most recently edited wo take into account changes in Moodle 2.7, and changes have been marked as such.  If you are using a different version of Moodle, your mileage may vary.)
 
 This plugin has no configuration itself, however your Moodle installation will require configuration to correctly use web services. 
 
