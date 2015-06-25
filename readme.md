@@ -612,6 +612,7 @@ The above query should return the following data structure (data for example pur
     * details_link - full URL to the badge details page on Moodle
     * image_url - full URL to the image
     * name - badge name
+    * leapcore - which kind of Leap tracker this course is tagged with (in the new Leap block).
 
 Use a URL with the following format:
 
@@ -645,6 +646,9 @@ The above query should return the following data structure (data for example pur
           <KEY name="name">
             <VALUE>Achievement Get: Logging In</VALUE>
           </KEY>
+          <KEY name="leapcore">
+            <VALUE>ppd</VALUE>
+          </KEY>
         </SINGLE>
         <SINGLE>
           <KEY name="course_id">
@@ -664,6 +668,9 @@ The above query should return the following data structure (data for example pur
           </KEY>
           <KEY name="name">
             <VALUE>Creeperlicious</VALUE>
+          </KEY>
+          <KEY name="leapcore">
+            <VALUE>maths</VALUE>
           </KEY>
         </SINGLE>
       </MULTIPLE>
@@ -768,6 +775,7 @@ The above query should return the following data structure, which is identical t
 
 ## History
 
+* 2015-06-25, v0.8.4: Change to webservice 'get_badges_by_username': added 'leapcore' flag from course Leap block instance configuration. Added dependency to new Leap block.
 * 2015-02-05, v0.8.3: Documentation update; added Moodle 2.4 (2012120300) as a minimum requirement.
 * 2014-11-24, v0.8.2: Look for a non-zero 'display' variable for a course and if found, use that to format the output.
 * 2014-11-20, v0.8.1: If a course completion has happened, check it's time against the course's timemodified and if newer, update.

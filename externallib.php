@@ -488,6 +488,9 @@ class local_leapwebservices_external extends external_api {
             exit(1);
         }
 
+        /**
+         * TODO: This information is now stored in a course's Leap block instance configuration. See get_badges_by_username() for code.
+         */
         $cores = array(
             'core'              => 'leapcore_core',
             'english'           => 'leapcore_english',
@@ -753,6 +756,9 @@ class local_leapwebservices_external extends external_api {
      * @param string $username EBS username, could be 8-digit int or string.
      * @return array An array describing targets (and metadata) for that user for all leapcore_* courses.
      */
+    /**
+     * TODO: add 'leapcore' tag from this course's Leap block instance configuraion into the output.
+     */
     public static function get_badges_by_username( $username ) {
         global $CFG, $DB;
 
@@ -793,6 +799,15 @@ class local_leapwebservices_external extends external_api {
                 $output[$count]['image_url']    = (string) badges_bake( $hash, $ubadge->id );
                 $output[$count]['name']         = $ubadge->name;
 
+                // Gets the 'leapcore' tag associated with the course associated with this badge.
+                $coursecontext  = context_course::instance( $ubadge->courseid );
+                $blockrecord    = $DB->get_record( 'block_instances', array(
+                    'blockname'         => 'leap',
+                    'parentcontextid'   => $coursecontext->id
+                ), '*', MUST_EXIST );
+                $blockinstance  = block_instance( 'leap', $blockrecord );
+                $output[$count]['leapcore']     = $blockinstance->config->trackertype;
+
             }
 
         }
@@ -815,6 +830,7 @@ class local_leapwebservices_external extends external_api {
                     'details_link'  => new external_value( PARAM_TEXT,  'Full URL to the issued page on Moodle.' ),
                     'image_url'     => new external_value( PARAM_TEXT,  'Full URL to the image.' ),
                     'name'          => new external_value( PARAM_TEXT,  'Badge name.' ),
+                    'leapcore'      => new external_value( PARAM_TEXT,  'The type of core course found.' ),
 
                 )
             )

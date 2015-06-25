@@ -25,9 +25,12 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version    = 2015020500;
-$plugin->requires   = 2012120300;       // Moodle 2.4
-$plugin->component  = 'local_leapwebservices';
-$plugin->cron       = 0;
-$plugin->maturity   = MATURITY_BETA;
-$plugin->release    = '0.8.3';
+$plugin->version        = 2015062500;
+$plugin->requires       = 2014051200;               // Requires Moodle 2.7 or newer.
+$plugin->component      = 'local_leapwebservices';
+$plugin->cron           = 0;
+$plugin->maturity       = MATURITY_BETA;
+$plugin->release        = '0.8.4';
+$plugin->dependencies   = array (
+    'block_leap'    => 2015062500,                  // Needs this version or later of the Leap block.
+);
