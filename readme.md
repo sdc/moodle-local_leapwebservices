@@ -21,7 +21,7 @@ This local Moodle plugin has it's own repository located at [github.com/sdc/mood
 
 This plugin works with Moodle version 2.4 (build 2012120300) or later, but please read the following:
 
-This plugin has been written to work with South Devon College's currently-in-production version of Moodle, which at this time is 2.7. This plugin still works in Moodle 2.4 except the `get_users_by_username` function, which requires a function not found in Moodle 2.4 or earlier.
+This plugin has been written to work with South Devon College's currently-in-production version of Moodle, which at this time is 2.9. This plugin still works in Moodle 2.4 except the `get_users_by_username` function, which requires a function not found in Moodle 2.4 or earlier.
 
 The badges functions `get_users_with_badges` and `get_badges_by_username` should work with any version of Moodle in which badges are found (2.5 onward) but have not been tested in versions earlier than 2.7.
 
@@ -32,7 +32,7 @@ Moodle 2.7 is a long-term support version and is being supported for security is
 
 ## Licence
 
-Copyright &copy; 2011-2014 South Devon College.
+Copyright &copy; 2011-2015 South Devon College.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -69,7 +69,7 @@ Before installation, please check you have the following files and structure:
 
 ## Configuration
 
-(**Note:** This guide has been written using Moodle 2.4, and added to over time using every released version of Moodle.  It has been most recently edited wo take into account changes in Moodle 2.7, and changes have been marked as such.  If you are using a different version of Moodle, your mileage may vary.)
+(**Note:** This guide has been written using Moodle 2.4, and added to over time using every released version of Moodle.  It has been most recently edited to take into account changes in Moodle 2.9, and any changes have been marked as such.  (Any changes in Moodle 2.7 will be similarly marked.)  If you are using a different version of Moodle, your mileage may vary.)
 
 This plugin has no configuration itself, however your Moodle installation will require configuration to correctly use web services. 
 
