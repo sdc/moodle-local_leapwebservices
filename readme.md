@@ -769,7 +769,6 @@ The above query should return the following data structure, which is identical t
 
 ## To Do
 
-* After the 2.8 upgrade, check and test all web services thoroughly on a fresh 2.8 instance, rewriting the documentation if necessary.
 * After the 2.9 upgrade, check and test all web services thoroughly on a fresh 2.9 instance, rewriting the documentation if necessary.
 
 
