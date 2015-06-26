@@ -178,9 +178,9 @@ This plugin has no configuration itself, however your Moodle installation will r
 
     Log in to your **Leap** installation as an administrative user.  Click on the **Admin** dropdown menu at the top on the right, next to your name. If you cannot see this menu, you do not have administrative rights on your Leap installation.  Select **Settings**.
     
-    Scroll down the screen until you see a section called **Old settings**. (This may change in the future as the settings aspect of Leap is improved.)  Find a field called **Moodle token** and paste into this field the token Moodle generated in step 10, above.
+    Scroll down the screen until you see a section called **Moodle Integration**. Find a field in this section called **Moodle token** and paste into this field the token Moodle generated in step 10, above.
     
-    Scroll down and click *Save changes*.
+    Scroll down to the bottom of the page and click *Save changes*.
     
     Accessing any student's information on Leap should now also show all courses they are enrolled on in Moodle.
 
