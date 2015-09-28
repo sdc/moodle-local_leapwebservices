@@ -60,7 +60,12 @@ class local_leapwebservices_external extends external_api {
             header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', true, 422);
         }
 
-         $courses = $DB->get_records_sql("SELECT DISTINCT c.id AS id, c.fullname, c.shortname, c.idnumber, c.visible
+        // Adding the required "@%" onto the end of the username to ensure the query below can find ALL types of username.
+        foreach ( $params as $key => $value ) {
+            $params[ $key ] = $value . '@%';
+        }
+
+        $courses = $DB->get_records_sql("SELECT DISTINCT c.id AS id, c.fullname, c.shortname, c.idnumber, c.visible
             FROM {role_assignments} ra, {user} u,
                 {course} c, {context} cxt, {role} r
             WHERE ra.userid = u.id
@@ -68,7 +73,7 @@ class local_leapwebservices_external extends external_api {
             AND cxt.contextlevel = 50
             AND cxt.instanceid = c.id
             AND ra.roleid = r.id
-            AND u.username = ?
+            AND u.username LIKE ?
             ORDER BY fullname ASC;", $params);
 
         $coursesinfo = array();
