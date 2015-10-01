@@ -60,11 +60,6 @@ class local_leapwebservices_external extends external_api {
             header($_SERVER["SERVER_PROTOCOL"].' 422 Unprocessable Entity ($params[\'username\'] empty.)', true, 422);
         }
 
-        // Adding the required "@%" onto the end of the username to ensure the query below can find ALL types of username.
-        foreach ( $params as $key => $value ) {
-            $params[ $key ] = $value . '@%';
-        }
-
         $courses = $DB->get_records_sql("SELECT DISTINCT c.id AS id, c.fullname, c.shortname, c.idnumber, c.visible
             FROM {role_assignments} ra, {user} u,
                 {course} c, {context} cxt, {role} r
@@ -293,9 +288,7 @@ class local_leapwebservices_external extends external_api {
 
         $result = array();
         foreach ( $params['usernames'] as $uname ) {
-            $fullusername = $uname . '@southdevon.ac.uk'; //  Required as our usernames coming outof Shibboleth are in the format of an email address.
-            //$fullusername = $uname;
-            if ( $user = $DB->get_record( 'user', array( 'username' => $fullusername ), '*', 'id,username,firstname,lastname,email,deleted' ) ) {
+            if ( $user = $DB->get_record( 'user', array( 'username' => $uname ), '*', 'id,username,firstname,lastname,email,deleted' ) ) {
 
                 $context = context_user::instance($user->id);
                 try {
@@ -387,7 +380,7 @@ class local_leapwebservices_external extends external_api {
             exit;
         }
 
-        $user = $DB->get_record('user', array('username' => $params['username']));
+        $user = $DB->get_record('user', array('username' => $params['username'] ));
         $courses = enrol_get_users_courses($user->id, false, '*');
         if (!empty($courses)) {
 
@@ -532,7 +525,8 @@ class local_leapwebservices_external extends external_api {
         );
 
         // Define the target's names.
-        $targets = array( 'TAG', 'L3VA', 'MAG' );
+        //$targets = array( 'TAG', 'L3VA', 'MAG' );
+        $targets = array( 'TAG' );
 
         $courses = array();
         foreach ( $cores as $core => $coresql ) {
@@ -700,9 +694,9 @@ class local_leapwebservices_external extends external_api {
         } // END foreach $courses.
 
         if ( !empty( $courses ) ) {
-
             return $courses;
-
+        } else {
+            return array();
         }
 
     } // END function.
