@@ -483,136 +483,121 @@ class local_leapwebservices_external extends external_api {
             exit(1);
         }
 
-        /**
-         * TODO: This information is now stored in a course's Leap block instance configuration. See get_badges_by_username() for code.
-         */
-        $cores = array(
-            'core'              => 'leapcore_core',
-            'english'           => 'leapcore_english',
-            'maths'             => 'leapcore_maths',
-            'ppd'               => 'leapcore_ppd',
-            'test'              => 'leapcore_test',
+        $targets    = array( 'TAG' );
+        $out        = array();
 
-            'a2_artdes'         => 'leapcore_a2_artdes',
-            'a2_artdesphoto'    => 'leapcore_a2_artdesphoto',
-            'a2_artdestext'     => 'leapcore_a2_artdestext',
-            'a2_biology'        => 'leapcore_a2_biology',
-            'a2_busstud'        => 'leapcore_a2_busstud',
-            'a2_chemistry'      => 'leapcore_a2_chemistry',
-            'a2_englishlang'    => 'leapcore_a2_englishlang',
-            'a2_englishlit'     => 'leapcore_a2_englishlit',
-            'a2_envsci'         => 'leapcore_a2_envsci',
-            'a2_envstud'        => 'leapcore_a2_envstud',
-            'a2_filmstud'       => 'leapcore_a2_filmstud',
-            'a2_geography'      => 'leapcore_a2_geography',
-            'a2_govpoli'        => 'leapcore_a2_govpoli',
-            'a2_history'        => 'leapcore_a2_history',
-            'a2_humanbiology'   => 'leapcore_a2_humanbiology',
-            'a2_law'            => 'leapcore_a2_law',
-            'a2_maths'          => 'leapcore_a2_maths',
-            'a2_mathsfurther'   => 'leapcore_a2_mathsfurther',
-            'a2_media'          => 'leapcore_a2_media',
-            'a2_philosophy'     => 'leapcore_a2_philosophy',
-            'a2_physics'        => 'leapcore_a2_physics',
-            'a2_psychology'     => 'leapcore_a2_psychology',
-            'a2_sociology'      => 'leapcore_a2_sociology',
+        // Checking for user enrolled as student role, manual enrolments only.
+        /*
+        $sql = "SELECT DISTINCT c.id AS courseid, c.shortname AS shortname, c.fullname AS fullname, username
+            FROM mdl_user u
+                JOIN mdl_user_enrolments ue ON ue.userid = u.id
+                JOIN mdl_enrol e ON e.id = ue.enrolid
+                    -- AND e.enrol = 'manual'
+                JOIN mdl_role_assignments ra ON ra.userid = u.id
+                JOIN mdl_context ct ON ct.id = ra.contextid
+                    AND ct.contextlevel = 50
+                JOIN mdl_course c ON c.id = ct.instanceid
+                    AND e.courseid = c.id
+                JOIN mdl_role r ON r.id = ra.roleid
+                    AND r.shortname = 'student'
+            WHERE u.username LIKE '" . $params['username'] . "%'
+                AND e.status = 0
+                AND u.suspended = 0
+                AND u.deleted = 0
+                AND (
+                    ue.timeend = 0
+                    OR ue.timeend > NOW()
+                )
+                AND ue.status = 0;";
+        */
 
-            'btecex_applsci'    => 'leapcore_btecex_applsci',
+        $sql = "SELECT DISTINCT c.id AS courseid, c.shortname AS shortname, c.fullname AS fullname, username
+            FROM mdl_role_assignments ra, mdl_user u, mdl_course c, mdl_context cxt, mdl_role r
+            WHERE ra.userid = u.id
+                AND ra.contextid = cxt.id
+                AND cxt.contextlevel = 50
+                AND cxt.instanceid = c.id
+                AND ra.roleid = r.id
+                AND u.username LIKE '" . $params['username'] . "%'
+            ORDER BY fullname ASC;";
 
-            'gcse_english'      => 'leapcore_gcse_english',
-            'gcse_maths'        => 'leapcore_gcse_maths',
+        if ( !$results = $DB->get_records_sql( $sql ) ) {
+            return false;
+        }
 
-        );
+        foreach ($results as $result) {
 
-        // Define the target's names.
-        //$targets = array( 'TAG', 'L3VA', 'MAG' );
-        $targets = array( 'TAG' );
-
-        $courses = array();
-        foreach ( $cores as $core => $coresql ) {
-
-            $courses[$core]['leapcore'] = $core;
-
-            // Checking for user enrolled as student role, manual enrolments only.
-            $sql = "SELECT DISTINCT c.id AS courseid, c.shortname AS shortname, c.fullname AS fullname, username
-                FROM mdl_user u
-                    JOIN mdl_user_enrolments ue ON ue.userid = u.id
-                    JOIN mdl_enrol e ON e.id = ue.enrolid
-                        -- AND e.enrol = 'manual'
-                    JOIN mdl_role_assignments ra ON ra.userid = u.id
-                    JOIN mdl_context ct ON ct.id = ra.contextid
-                        AND ct.contextlevel = 50
-                    JOIN mdl_course c ON c.id = ct.instanceid
-                        AND e.courseid = c.id
-                    JOIN mdl_role r ON r.id = ra.roleid
-                        AND r.shortname = 'student'
-                WHERE c.idnumber LIKE '%|" . $coresql . "|%'
-                    AND u.username LIKE '" . $params['username'] . "%'
-                    AND e.status = 0
-                    AND u.suspended = 0
-                    AND u.deleted = 0
-                    AND (
-                        ue.timeend = 0
-                        OR ue.timeend > NOW()
-                    )
-                    AND ue.status = 0;";
-
-            // There is potential here for a user to have more than one 'leapcore_core' course, but it's pretty unlikely.
-            // We probably need to handle this better (at the moment the below function expects 0 or 1 results and fails).
-            if ( !$result = $DB->get_record_sql( $sql ) ) {
-                unset($courses[$core]);
+            $coursecontext  = context_course::instance( $result->courseid );
+            if (!$blockrecord    = $DB->get_record( 'block_instances', array(
+                'blockname'         => 'leap',
+                'parentcontextid'   => $coursecontext->id
+            ), '*' ) ) {
                 continue;
-            } else {
-                $courses[$core]['course_shortname'] = $result->shortname;
-                $courses[$core]['course_fullname']  = $result->fullname;
-                $courses[$core]['course_id']        = $result->courseid;
             }
+
+            $blockinstance  = block_instance( 'leap', $blockrecord );
+            if (isset($blockinstance->config->trackertype) && !is_null($blockinstance->config->trackertype) && !empty($blockinstance->config->trackertype)) {
+                $trackertype    = $blockinstance->config->trackertype;
+            } else {
+                continue;
+            }
+
+            $out[$trackertype]['leapcore']          = $trackertype;
+            $out[$trackertype]['course_id']         = $result->courseid;
+            $out[$trackertype]['course_shortname']  = $result->shortname;
+            $out[$trackertype]['course_fullname']   = $result->fullname;
 
             // Walk through a fair few objects to get the course's time modified, final grade and named grade.
             $gi         = new grade_item();
             // The course item is actually the right one to use, even if it is null.
-            $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'course' ) );
+            $gi_item    = $gi::fetch( array( 'courseid' => $out[$trackertype]['course_id'], 'itemtype' => 'course' ) );
             // This may get changed further down the script as we want the most recently changed item's date.
-            $courses[$core]['course_total_modified'] = $gi_item->timemodified;
+            $out[$trackertype]['course_total_modified'] = $gi_item->timemodified;
 
             $gg         = new grade_grade();
             $gg_grade   = $gg::fetch( array( 'itemid' => $gi_item->id, 'userid' => $user->id ) );
 
             // If the scale is going to be a U (or Refer, or Fail etc) as the L3VA is 0, pass null.
             if ( $gg_grade && $gg_grade->finalgrade > 0 ) {
-                $courses[$core]['course_total'] = $gg_grade->finalgrade;
+                $out[$trackertype]['course_total'] = $gg_grade->finalgrade;
 
                 $gs         = new grade_scale();
                 $gs_scale   = $gs::fetch( array( 'id' => $gi_item->scaleid ) );
                 if ( $gi_item->display != 0 ) {
                     // Check first for a non-zero 'display' variable, and run with that if found.
-                    $courses[$core]['course_total_display'] = grade_format_gradevalue( $gg_grade->finalgrade, $gi_item, true, $gi_item->display );
+                    $out[$trackertype]['course_total_display'] = grade_format_gradevalue( $gg_grade->finalgrade, $gi_item, true, $gi_item->display );
                 } else if ( $gs_scale ) {
                     // See if we have a scale and use that if found.
-                    $courses[$core]['course_total_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
+                    $out[$trackertype]['course_total_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
                 } else {
                     if ( is_numeric( $gg_grade->finalgrade ) ) {
-                        $courses[$core]['course_total_display'] = round( $courses[$core]['course_total'], 0, PHP_ROUND_HALF_UP );
+                        $out[$trackertype]['course_total_display'] = round( $out[$trackertype]['course_total'], 0, PHP_ROUND_HALF_UP );
                     } else {
-                        $courses[$core]['course_total_display'] = $courses[$core]['course_total'];
+                        $out[$trackertype]['course_total_display'] = $out[$trackertype]['course_total'];
                     }
                 }
 
             } else {
-                $courses[$core]['course_total'] = 0;
+                $out[$trackertype]['course_total'] = 0;
 
-                $courses[$core]['course_total_display'] = null;
+                $out[$trackertype]['course_total_display'] = null;
             }
 
             // For each target, same as above.
             foreach ( $targets as $target ) {
 
                 $gi         = new grade_item();
-                $gi_item    = $gi::fetch( array( 'courseid' => $courses[$core]['course_id'], 'itemtype' => 'manual', 'itemname' => $target ) );
+                $gi_item    = $gi::fetch( array( 'courseid' => $out[$trackertype]['course_id'], 'itemtype' => 'manual', 'itemname' => $target ) );
 
                 $gg         = new grade_grade();
                 $gg_grade   = $gg::fetch( array( 'itemid' => $gi_item->id, 'userid' => $user->id ) );
-                $courses[$core][strtolower($target)]   = $gg_grade->finalgrade;
+
+                if (!isset($gg_grade->finalgrade)) {
+                    $gg_grade = new stdClass;
+                    $gg_grade->finalgrade = 0;
+                }
+                $out[$trackertype][strtolower($target)]   = $gg_grade->finalgrade;
+
 
                 // Get the named result (e.g. 'merit') only for targets which are not L3VA.
                 if ( $target <> 'L3VA' ) {
@@ -621,41 +606,41 @@ class local_leapwebservices_external extends external_api {
                     $gs_scale   = $gs::fetch( array( 'id' => $gi_item->scaleid ) );
 
                     // Updating the most recently modified date if it's newer.
-                    if ( $gi_item->timemodified > $courses[$core]['course_total_modified'] ) {
-                        $courses[$core]['course_total_modified'] = $gi_item->timemodified;
+                    if ( $gi_item->timemodified > $out[$trackertype]['course_total_modified'] ) {
+                        $out[$trackertype]['course_total_modified'] = $gi_item->timemodified;
                     }
 
                     // If the scale is going to be a U (or Refer, or Fail etc) as the L3VA is 0, pass null.
                     if ( $gg_grade->finalgrade > 0 ) {
                         // If there's no scale, just pass the data across.
                         if ( $gs_scale ) {
-                            $courses[$core][strtolower($target) . '_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
+                            $out[$trackertype][strtolower($target) . '_display'] = $gs_scale->get_nearest_item( $gg_grade->finalgrade );
                         } else {
-                            $courses[$core][strtolower($target) . '_display'] = $gg_grade->finalgrade;
+                            $out[$trackertype][strtolower($target) . '_display'] = $gg_grade->finalgrade;
                         }
                     } else {
-                        $courses[$core][strtolower($target) . '_display'] = null;
+                        $out[$trackertype][strtolower($target) . '_display'] = null;
                     }
 
                 } else {
 
-                    $courses[$core][strtolower($target) . '_display'] = $courses[$core][strtolower($target)];
+                    $out[$trackertype][strtolower($target) . '_display'] = $out[$trackertype][strtolower($target)];
                 }
 
                 // Rounding.
-                if ( is_numeric( $courses[$core][strtolower($target) . '_display'] ) ) {
-                    $courses[$core][strtolower($target) . '_display'] = round( $courses[$core][strtolower($target) . '_display'], 2, PHP_ROUND_HALF_UP );
+                if ( is_numeric( $out[$trackertype][strtolower($target) . '_display'] ) ) {
+                    $out[$trackertype][strtolower($target) . '_display'] = round( $out[$trackertype][strtolower($target) . '_display'], 2, PHP_ROUND_HALF_UP );
                 }
 
             }
 
             // Default both of these to null.
-            $courses[$core]['course_completion_total']     = null;
-            $courses[$core]['course_completion_completed'] = null;
+            $out[$trackertype]['course_completion_total']     = null;
+            $out[$trackertype]['course_completion_completed'] = null;
 
             // We could do with a course object to use.
             $sql = "SELECT id from {course} WHERE id LIKE ?;";
-            if ( !$thiscourse = $DB->get_record_sql( $sql, array( $courses[$core]['course_id'] ) ) ) {
+            if ( !$thiscourse = $DB->get_record_sql( $sql, array( $out[$trackertype]['course_id'] ) ) ) {
                 exit(1);
             }
 
@@ -667,13 +652,13 @@ class local_leapwebservices_external extends external_api {
                 // If there's no completions, none have been configured so do nothing.
                 if ( !empty( $completions ) ) {
 
-                    $courses[$core]['course_completion_total']     = count( $completions );
-                    $courses[$core]['course_completion_completed'] = $info->count_course_user_data( $user->id );
+                    $out[$trackertype]['course_completion_total']     = count( $completions );
+                    $out[$trackertype]['course_completion_completed'] = $info->count_course_user_data( $user->id );
 
                     // Loop through each timecompleted value, ignore if null, update if more recent.
                     foreach ($completions as $completion) {
-                        if ( !is_null( $completion->timecompleted ) && $completion->timecompleted > $courses[$core]['course_total_modified'] ) {
-                            $courses[$core]['course_total_modified'] = $completion->timecompleted;
+                        if ( !is_null( $completion->timecompleted ) && $completion->timecompleted > $out[$trackertype]['course_total_modified'] ) {
+                            $out[$trackertype]['course_total_modified'] = $completion->timecompleted;
                         }
                     }
                 }
@@ -681,20 +666,20 @@ class local_leapwebservices_external extends external_api {
             } // END completion info enabled for site check.
 
             // Stress reduction code.
-            $courses[$core]['meaning_of_life']  = '42';
-            $courses[$core]['smiley_face']      = ':)';
+            //$out[$trackertype]['meaning_of_life']  = '42';
+            //$out[$trackertype]['smiley_face']      = ':)';
 
             // Incomplete course check.
             // TODO: make this better. We scan through all four 'leapcore_' tags (and all the new A2 ones) and get the results, 
             // but sometimes there aren't any.  So for the tags with no associated courses, we remove them.
-            if ( !isset( $courses[$core]['course_shortname'] ) ) {
-                unset($courses[$core]);
+            if ( !isset( $out[$trackertype]['course_shortname'] ) ) {
+                unset($out[$trackertype]);
             }
 
         } // END foreach $courses.
 
-        if ( !empty( $courses ) ) {
-            return $courses;
+        if ( !empty( $out ) ) {
+            return $out;
         } else {
             return array();
         }
@@ -714,19 +699,19 @@ class local_leapwebservices_external extends external_api {
                     'course_shortname'              => new external_value( PARAM_TEXT,      'The short course name.' ),
                     'course_fullname'               => new external_value( PARAM_TEXT,      'The full course name.' ),
                     'course_id'                     => new external_value( PARAM_INTEGER,   'The course ID number.' ),
-                    'mag'                           => new external_value( PARAM_FLOAT,     'Minimum Achievable Grade.' ),
-                    'mag_display'                   => new external_value( PARAM_TEXT,      'Minimum Achievable Grade (for display).' ),
+                    //'mag'                           => new external_value( PARAM_FLOAT,     'Minimum Achievable Grade.' ),
+                    //'mag_display'                   => new external_value( PARAM_TEXT,      'Minimum Achievable Grade (for display).' ),
                     'tag'                           => new external_value( PARAM_FLOAT,     'Target Achievable Grade.' ),
                     'tag_display'                   => new external_value( PARAM_TEXT,      'Target Achievable Grade (for display).' ),
-                    'l3va'                          => new external_value( PARAM_FLOAT,     'Level 3 Value Added.' ),
-                    'l3va_display'                  => new external_value( PARAM_TEXT,      'Level 3 Value Added (for display).' ),
+                    //'l3va'                          => new external_value( PARAM_FLOAT,     'Level 3 Value Added.' ),
+                    //'l3va_display'                  => new external_value( PARAM_TEXT,      'Level 3 Value Added (for display).' ),
                     'course_total'                  => new external_value( PARAM_FLOAT,     'Course total score.' ),
                     'course_total_display'          => new external_value( PARAM_TEXT,      'Course total score (for display).' ),
                     'course_total_modified'         => new external_value( PARAM_INTEGER,   'Course total modification timestamp.' ),
                     'course_completion_total'       => new external_value( PARAM_INTEGER,   'Course completion total.' ),
                     'course_completion_completed'   => new external_value( PARAM_INTEGER,   'Course completion complete.' ),
-                    'meaning_of_life'               => new external_value( PARAM_INTEGER,   'Meaning of life.' ),
-                    'smiley_face'                   => new external_value( PARAM_TEXT,      'Smiley face.' ),
+                    //'meaning_of_life'               => new external_value( PARAM_INTEGER,   'Meaning of life.' ),
+                    //'smiley_face'                   => new external_value( PARAM_TEXT,      'Smiley face.' ),
                 )
             )
         );
