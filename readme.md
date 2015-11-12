@@ -95,7 +95,7 @@ This plugin has no configuration itself, however your Moodle installation will r
 
 5.  Create a new role ("web services") with appropriate protocol capabilities allowed (**webservice/rest:use**). Click on **Administration (block) &rarr; Site Administration &rarr; Users &rarr; Permissions &rarr; Define roles**, and click on **Add role**.
 
-    **Moodle 2.7:** In Moodle 2.7 you are presented with a page with the option *Use role or archetype* and some others, which you do not get in Moodle 2.6. Simply ignore these options and click **Continue**.
+    **Moodle 2.7 and greater:** In Moodle 2.7 onwards, you are presented with a page with the option *Use role or archetype* and some others, which you do not get in Moodle 2.6 or earlier. Simply ignore these options and click **Continue**.
 
     Type in a relevant short (internal) name and a full (human readable) name, as well as a description (will only be seen by admins).  Ignore *Role archetype*. Check only the **system** check box. Search for and **allow** the following capabilities:
 
